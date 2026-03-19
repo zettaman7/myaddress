@@ -7,18 +7,18 @@ interface Props {
   setAliasEditReturn: (v: 'detail' | 'mypage') => void
 }
 
-const HERO_IMG = 'https://picsum.photos/seed/pcbang/800/520'
+const HERO_IMG = '/images/dTADN.jpeg'
 
 const photos = [
-  { url: 'https://picsum.photos/seed/interior/230/180', label: '내부 전경' },
-  { url: 'https://picsum.photos/seed/pcdesk/230/180', label: '고사양 PC석' },
-  { url: 'https://picsum.photos/seed/gaming/230/180', label: '게이밍존' },
-  { url: 'https://picsum.photos/seed/drinks/230/180', label: '음료 코너' },
-  { url: 'https://picsum.photos/seed/sofa/230/180', label: '소파석' },
-  { url: 'https://picsum.photos/seed/viproom/230/180', label: 'VIP존' },
-  { url: 'https://picsum.photos/seed/food/230/180', label: '식사 메뉴' },
-  { url: 'https://picsum.photos/seed/audio/230/180', label: '음향장비' },
-  { url: 'https://picsum.photos/seed/parking/230/180', label: '주차장' },
+  { url: '/images/NvcCz.jpeg', label: '내부 전경' },
+  { url: '/images/y5d7Y.jpeg', label: '고사양 PC석' },
+  { url: '/images/ytKap.jpeg', label: '게이밍존' },
+  { url: '/images/386b7.jpeg', label: '음료 코너' },
+  { url: '/images/c8w3d.jpeg', label: '소파석' },
+  { url: '/images/Qnbxg.jpeg', label: 'VIP존' },
+  { url: '/images/LVlv7.jpeg', label: '식사 메뉴' },
+  { url: '/images/7e21F.jpeg', label: '음향장비' },
+  { url: '/images/ADAIP.jpeg', label: '주차장' },
 ]
 
 export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditReturn }: Props) {

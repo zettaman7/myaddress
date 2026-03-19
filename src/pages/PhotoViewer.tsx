@@ -4,16 +4,15 @@ import { Page } from '../App'
 interface Props { navigate: (to: Page) => void }
 
 const photos = [
-  { bg: 'linear-gradient(135deg, #0f1c2e 0%, #1a2f4a 100%)', emoji: '💻', label: '내부 전경' },
-  { bg: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)', emoji: '🖥', label: '고사양 PC석' },
-  { bg: 'linear-gradient(135deg, #0f2238 0%, #1e3a5f 100%)', emoji: '🎮', label: '게이밍존' },
-  { bg: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', emoji: '☕', label: '음료 코너' },
-  { bg: 'linear-gradient(135deg, #14532d 0%, #166534 100%)', emoji: '🛋', label: '소파석' },
-  { bg: 'linear-gradient(135deg, #312e81 0%, #4338ca 100%)', emoji: '🏆', label: 'VIP존' },
-  { bg: 'linear-gradient(135deg, #7c2d12 0%, #9a3412 100%)', emoji: '🍜', label: '식사 메뉴' },
-  { bg: 'linear-gradient(135deg, #0c4a6e 0%, #075985 100%)', emoji: '🚿', label: '샤워시설' },
-  { bg: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', emoji: '🎧', label: '음향장비' },
-  { bg: 'linear-gradient(135deg, #064e3b 0%, #065f46 100%)', emoji: '🅿', label: '주차장' },
+  { url: '/images/NvcCz.jpeg', label: '내부 전경' },
+  { url: '/images/y5d7Y.jpeg', label: '고사양 PC석' },
+  { url: '/images/ytKap.jpeg', label: '게이밍존' },
+  { url: '/images/386b7.jpeg', label: '음료 코너' },
+  { url: '/images/c8w3d.jpeg', label: '소파석' },
+  { url: '/images/Qnbxg.jpeg', label: 'VIP존' },
+  { url: '/images/LVlv7.jpeg', label: '식사 메뉴' },
+  { url: '/images/7e21F.jpeg', label: '음향장비' },
+  { url: '/images/ADAIP.jpeg', label: '주차장' },
 ]
 
 export default function PhotoViewer({ navigate }: Props) {
@@ -36,8 +35,8 @@ export default function PhotoViewer({ navigate }: Props) {
       </div>
 
       {/* Main photo */}
-      <div className="flex-1 flex items-center justify-center relative" style={{ background: p.bg }}>
-        <span style={{ fontSize: 80 }}>{p.emoji}</span>
+      <div className="flex-1 relative overflow-hidden">
+        <img src={p.url} alt={p.label} className="w-full h-full object-cover" />
         <span className="absolute bottom-4 left-4 text-white text-[14px] font-semibold px-3 py-1.5 rounded-xl"
               style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>{p.label}</span>
 
