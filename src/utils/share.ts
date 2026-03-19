@@ -5,7 +5,7 @@ interface PlaceInfo {
 }
 
 export async function sharePlace({ alias, name, address }: PlaceInfo) {
-  const mapUrl = `https://map.naver.com/search/${encodeURIComponent(address)}`
+  const mapUrl = `https://map.naver.com/v5/search/${encodeURIComponent(address)}`
   const text = [
     alias ? `@${alias}` : '',
     `장소명: ${name}`,
