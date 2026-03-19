@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { Page } from '../App'
 import TabBar from '../components/TabBar'
 import MiniCard from '../components/MiniCard'
+import SwipeReveal from '../components/SwipeReveal'
 import { sharePlace } from '../utils/share'
 
 interface Props {
@@ -191,35 +192,33 @@ export default function SearchResults({ navigate, setSelectedHasAlias }: Props) 
           {/* Cards */}
           <div className="flex-1 overflow-y-auto px-4 flex flex-col gap-2 pb-2" style={{ scrollbarWidth: 'none' }}>
             {cards.map((c, i) => (
-              <button key={i} onClick={() => {
-                setSelectedHasAlias(c.hasAlias)
-                i === 0 ? setShowMini(true) : navigate('detail')
-              }}
-                      className="w-full flex items-start gap-3 p-3 text-left rounded-xl"
-                      style={{ backgroundColor: i === 0 ? '#FFFFFF' : '#F8FAFC', border: i === 0 ? '1px solid #E2E8F0' : 'none' }}>
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
-                     style={{ backgroundColor: c.iconBg }}>
-                  {c.icon}
-                </div>
-                <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[13px] font-bold" style={{ color: '#1E3A5F' }}>{c.alias}</span>
-                    <div className="flex items-center gap-1.5">
+              <SwipeReveal key={i}
+                           onShare={() => sharePlace({ alias: c.alias, name: c.original, address: c.address })}>
+                <button onClick={() => {
+                  setSelectedHasAlias(c.hasAlias)
+                  i === 0 ? setShowMini(true) : navigate('detail')
+                }}
+                        className="w-full flex items-start gap-3 p-3 text-left"
+                        style={{ backgroundColor: i === 0 ? '#FFFFFF' : '#F8FAFC', border: i === 0 ? '1px solid #E2E8F0' : 'none' }}>
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                       style={{ backgroundColor: c.iconBg }}>
+                    {c.icon}
+                  </div>
+                  <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[13px] font-bold" style={{ color: '#1E3A5F' }}>{c.alias}</span>
                       {c.badge && (
                         <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
                               style={{ backgroundColor: c.badgeBg, color: c.badgeColor }}>{c.badge}</span>
                       )}
-                      <button onClick={e => { e.stopPropagation(); sharePlace({ alias: c.alias, name: c.original, address: c.address }) }}
-                              className="w-7 h-7 rounded-full flex items-center justify-center text-[13px]"
-                              style={{ backgroundColor: '#EFF6FF', color: '#2563EB' }}>↑</button>
                     </div>
+                    <span className="text-[11px]" style={{ color: '#64748B' }}>{c.original}</span>
+                    <span className="text-[10px]" style={{ color: '#64748B' }}>{c.meta}</span>
+                    <span className="text-[10px]" style={{ color: '#64748B' }}>{c.tags}</span>
+                    <span className="text-[10px] font-semibold" style={{ color: '#2563EB' }}>{c.reason}</span>
                   </div>
-                  <span className="text-[11px]" style={{ color: '#64748B' }}>{c.original}</span>
-                  <span className="text-[10px]" style={{ color: '#64748B' }}>{c.meta}</span>
-                  <span className="text-[10px]" style={{ color: '#64748B' }}>{c.tags}</span>
-                  <span className="text-[10px] font-semibold" style={{ color: '#2563EB' }}>{c.reason}</span>
-                </div>
-              </button>
+                </button>
+              </SwipeReveal>
             ))}
           </div>
 

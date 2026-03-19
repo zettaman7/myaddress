@@ -1,5 +1,7 @@
 import { Page } from '../App'
 import TabBar from '../components/TabBar'
+import SwipeReveal from '../components/SwipeReveal'
+import { sharePlace } from '../utils/share'
 
 interface Props {
   navigate: (to: Page) => void
@@ -15,6 +17,8 @@ const stats = [
 const aliases = [
   {
     name: '@강남구 넓고 빠른 게임아지트  ·  강남 PC프라자',
+    alias: '강남구 넓고 빠른 게임아지트',
+    placeName: '강남 PC프라자',
     address: '서울 강남구 테헤란로 152, 지하 1층',
     badges: [
       { label: '신규등록', bg: '#D1FAE5', text: '#059669' },
@@ -29,6 +33,8 @@ const aliases = [
   },
   {
     name: '@xmas_party2025  ·  파티룸홍대@party_hd',
+    alias: 'xmas_party2025',
+    placeName: '파티룸홍대',
     address: '서울 마포구 와우산로 17, 2층',
     badges: [
       { label: 'D-2 만료', bg: '#FEF3C7', text: '#D97706' },
@@ -101,8 +107,9 @@ export default function MyPage({ navigate, setAliasEditReturn }: Props) {
           </div>
 
           {aliases.map((a, i) => (
+            <SwipeReveal key={i}
+                         onShare={() => sharePlace({ alias: a.alias, name: a.placeName, address: a.address })}>
             <div
-              key={i}
               className="flex flex-col gap-2 p-3.5 rounded-[16px] border"
               style={{ backgroundColor: a.cardBg, borderColor: a.cardBorder }}
             >
@@ -141,6 +148,7 @@ export default function MyPage({ navigate, setAliasEditReturn }: Props) {
                 ))}
               </div>
             </div>
+            </SwipeReveal>
           ))}
         </div>
 
