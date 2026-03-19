@@ -7,17 +7,18 @@ interface Props {
   setAliasEditReturn: (v: 'detail' | 'mypage') => void
 }
 
+const HERO_IMG = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=520&fit=crop'
+
 const photos = [
-  { bg: 'linear-gradient(135deg, #0f1c2e 0%, #1a2f4a 100%)', emoji: '💻', label: '내부 전경' },
-  { bg: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)', emoji: '🖥', label: '고사양 PC석' },
-  { bg: 'linear-gradient(135deg, #0f2238 0%, #1e3a5f 100%)', emoji: '🎮', label: '게이밍존' },
-  { bg: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', emoji: '☕', label: '음료 코너' },
-  { bg: 'linear-gradient(135deg, #14532d 0%, #166534 100%)', emoji: '🛋', label: '소파석' },
-  { bg: 'linear-gradient(135deg, #312e81 0%, #4338ca 100%)', emoji: '🏆', label: 'VIP존' },
-  { bg: 'linear-gradient(135deg, #7c2d12 0%, #9a3412 100%)', emoji: '🍜', label: '식사 메뉴' },
-  { bg: 'linear-gradient(135deg, #0c4a6e 0%, #075985 100%)', emoji: '🚿', label: '샤워시설' },
-  { bg: 'linear-gradient(135deg, #1c1917 0%, #292524 100%)', emoji: '🎧', label: '음향장비' },
-  { bg: 'linear-gradient(135deg, #064e3b 0%, #065f46 100%)', emoji: '🅿', label: '주차장' },
+  { url: 'https://images.unsplash.com/photo-1593640408182-31c228bf38a2?w=230&h=180&fit=crop', label: '내부 전경' },
+  { url: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=230&h=180&fit=crop', label: '고사양 PC석' },
+  { url: 'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=230&h=180&fit=crop', label: '게이밍존' },
+  { url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=230&h=180&fit=crop', label: '음료 코너' },
+  { url: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=230&h=180&fit=crop', label: '소파석' },
+  { url: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=230&h=180&fit=crop', label: 'VIP존' },
+  { url: 'https://images.unsplash.com/photo-1562802378-063ec186a863?w=230&h=180&fit=crop', label: '식사 메뉴' },
+  { url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=230&h=180&fit=crop', label: '음향장비' },
+  { url: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=230&h=180&fit=crop', label: '주차장' },
 ]
 
 export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditReturn }: Props) {
@@ -28,10 +29,9 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
 
       {/* ── Hero image area ─────────────────────────────────────────────── */}
       <div className="relative flex-shrink-0" style={{ height: 260 }}>
-        {/* Hero background (mock gradient photo) */}
-        <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #0f1c2e 0%, #1a2f4a 60%, #0f2238 100%)' }}>
-          <div className="absolute inset-0 flex items-center justify-center" style={{ fontSize: 72, opacity: 0.35 }}>💻</div>
-        </div>
+        {/* Hero background photo */}
+        <img src={HERO_IMG} alt="장소 대표 사진"
+             className="absolute inset-0 w-full h-full object-cover" />
         {/* Dark overlay */}
         <div className="absolute inset-0" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} />
 
@@ -107,9 +107,9 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
             {photos.map((p, i) => (
               <button key={i}
                       onClick={() => navigate('photo-view')}
-                      className="flex-shrink-0 rounded-xl overflow-hidden flex items-center justify-center relative"
-                      style={{ width: 115, height: 90, background: p.bg }}>
-                <span style={{ fontSize: 26 }}>{p.emoji}</span>
+                      className="flex-shrink-0 rounded-xl overflow-hidden relative"
+                      style={{ width: 115, height: 90 }}>
+                <img src={p.url} alt={p.label} className="w-full h-full object-cover" />
                 <span className="absolute bottom-1 left-1 text-[9px] font-semibold text-white px-1 py-0.5 rounded"
                       style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>{p.label}</span>
               </button>
