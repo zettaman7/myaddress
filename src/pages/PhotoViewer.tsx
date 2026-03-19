@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Page } from '../App'
 
 interface Props { navigate: (to: Page) => void }
@@ -17,8 +17,27 @@ const photos = [
 
 export default function PhotoViewer({ navigate }: Props) {
   const [current, setCurrent] = useState(0)
-  const prev = () => setCurrent(c => Math.max(0, c - 1))
-  const next = () => setCurrent(c => Math.min(photos.length - 1, c + 1))
+  const [dragX, setDragX] = useState(0)
+  const dragRef = useRef<{ startX: number; dragging: boolean }>({ startX: 0, dragging: false })
+
+  const goTo = (i: number) => setCurrent(Math.max(0, Math.min(photos.length - 1, i)))
+
+  const onStart = (x: number) => {
+    dragRef.current = { startX: x, dragging: true }
+    setDragX(0)
+  }
+  const onMove = (x: number) => {
+    if (!dragRef.current.dragging) return
+    setDragX(x - dragRef.current.startX)
+  }
+  const onEnd = () => {
+    if (!dragRef.current.dragging) return
+    dragRef.current.dragging = false
+    if (dragX < -50) goTo(current + 1)
+    else if (dragX > 50) goTo(current - 1)
+    setDragX(0)
+  }
+
   const p = photos[current]
 
   return (
@@ -34,22 +53,30 @@ export default function PhotoViewer({ navigate }: Props) {
         <div className="w-9" />
       </div>
 
-      {/* Main photo */}
-      <div className="flex-1 relative overflow-hidden">
-        <img src={p.url} alt={p.label} className="w-full h-full object-cover" />
+      {/* Main photo — draggable */}
+      <div className="flex-1 relative overflow-hidden"
+           style={{ cursor: 'grab' }}
+           onMouseDown={e => onStart(e.clientX)}
+           onMouseMove={e => onMove(e.clientX)}
+           onMouseUp={onEnd}
+           onMouseLeave={onEnd}
+           onTouchStart={e => onStart(e.touches[0].clientX)}
+           onTouchMove={e => onMove(e.touches[0].clientX)}
+           onTouchEnd={onEnd}>
+        <img src={p.url} alt={p.label}
+             className="w-full h-full object-cover select-none"
+             style={{ transform: `translateX(${dragX}px)`, transition: dragX === 0 ? 'transform 0.2s' : 'none' }}
+             draggable={false} />
         <span className="absolute bottom-4 left-4 text-white text-[14px] font-semibold px-3 py-1.5 rounded-xl"
               style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>{p.label}</span>
 
-        {/* Left arrow */}
         {current > 0 && (
-          <button onClick={prev}
+          <button onClick={() => goTo(current - 1)}
                   className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white text-xl"
                   style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>‹</button>
         )}
-
-        {/* Right arrow */}
         {current < photos.length - 1 && (
-          <button onClick={next}
+          <button onClick={() => goTo(current + 1)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white text-xl"
                   style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>›</button>
         )}
