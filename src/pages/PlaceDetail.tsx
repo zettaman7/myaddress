@@ -7,18 +7,18 @@ interface Props {
   setAliasEditReturn: (v: 'detail' | 'mypage') => void
 }
 
-const HERO_IMG = 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=520&fit=crop'
+const HERO_IMG = 'https://picsum.photos/seed/pcbang/800/520'
 
 const photos = [
-  { url: 'https://images.unsplash.com/photo-1593640408182-31c228bf38a2?w=230&h=180&fit=crop', label: '내부 전경' },
-  { url: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=230&h=180&fit=crop', label: '고사양 PC석' },
-  { url: 'https://images.unsplash.com/photo-1542751110-97427bbecf20?w=230&h=180&fit=crop', label: '게이밍존' },
-  { url: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=230&h=180&fit=crop', label: '음료 코너' },
-  { url: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=230&h=180&fit=crop', label: '소파석' },
-  { url: 'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=230&h=180&fit=crop', label: 'VIP존' },
-  { url: 'https://images.unsplash.com/photo-1562802378-063ec186a863?w=230&h=180&fit=crop', label: '식사 메뉴' },
-  { url: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=230&h=180&fit=crop', label: '음향장비' },
-  { url: 'https://images.unsplash.com/photo-1506521781263-d8422e82f27a?w=230&h=180&fit=crop', label: '주차장' },
+  { url: 'https://picsum.photos/seed/interior/230/180', label: '내부 전경' },
+  { url: 'https://picsum.photos/seed/pcdesk/230/180', label: '고사양 PC석' },
+  { url: 'https://picsum.photos/seed/gaming/230/180', label: '게이밍존' },
+  { url: 'https://picsum.photos/seed/drinks/230/180', label: '음료 코너' },
+  { url: 'https://picsum.photos/seed/sofa/230/180', label: '소파석' },
+  { url: 'https://picsum.photos/seed/viproom/230/180', label: 'VIP존' },
+  { url: 'https://picsum.photos/seed/food/230/180', label: '식사 메뉴' },
+  { url: 'https://picsum.photos/seed/audio/230/180', label: '음향장비' },
+  { url: 'https://picsum.photos/seed/parking/230/180', label: '주차장' },
 ]
 
 export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditReturn }: Props) {
