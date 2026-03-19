@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { Page } from '../App'
 import TabBar from '../components/TabBar'
+import LongPressAliasSheet from '../components/LongPressAliasSheet'
 
 interface Props { navigate: (to: Page) => void }
 
@@ -101,12 +102,71 @@ export default function MainHome({ navigate }: Props) {
   const [browseDragging, setBrowseDragging] = useState(false)
   const browseDragRef = useRef({ ox: 0, oy: 0, sx: 0, sy: 0 })
 
-  const onBrowseMouseDown = (e: React.MouseEvent) => { setBrowseDragging(true); browseDragRef.current = { ox: browseX, oy: browseY, sx: e.clientX, sy: e.clientY } }
-  const onBrowseMouseMove = (e: React.MouseEvent) => { if (!browseDragging) return; const { ox, oy, sx, sy } = browseDragRef.current; setBrowseX(ox + e.clientX - sx); setBrowseY(oy + e.clientY - sy) }
-  const onBrowseMouseUp = () => setBrowseDragging(false)
-  const onBrowseTouchStart = (e: React.TouchEvent) => { const t = e.touches[0]; setBrowseDragging(true); browseDragRef.current = { ox: browseX, oy: browseY, sx: t.clientX, sy: t.clientY } }
-  const onBrowseTouchMove = (e: React.TouchEvent) => { if (!browseDragging) return; const t = e.touches[0]; const { ox, oy, sx, sy } = browseDragRef.current; setBrowseX(ox + t.clientX - sx); setBrowseY(oy + t.clientY - sy) }
-  const onBrowseTouchEnd = () => setBrowseDragging(false)
+  // Long-press state
+  const [longPressPin, setLongPressPin] = useState<{ x: number; y: number } | null>(null)
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const longPressMoved = useRef(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  const getLongPressAddress = (x: number, y: number) => {
+    const addresses = [
+      '서울 강동구 천호대로 1071', '서울 강동구 성내로 12', '서울 강동구 올림픽로 123',
+      '서울 강동구 암사동 45', '서울 강동구 고덕로 88',
+    ]
+    return addresses[Math.abs(Math.floor(x / 80 + y / 100)) % addresses.length]
+  }
+
+  const startLongPress = (clientX: number, clientY: number) => {
+    longPressMoved.current = false
+    longPressTimer.current = setTimeout(() => {
+      if (longPressMoved.current) return
+      const rect = containerRef.current?.getBoundingClientRect()
+      if (!rect) return
+      setLongPressPin({ x: clientX - rect.left, y: clientY - rect.top })
+      setBrowseDragging(false)
+    }, 500)
+  }
+
+  const cancelLongPress = (clientX: number, clientY: number) => {
+    const { sx, sy } = browseDragRef.current
+    if (Math.abs(clientX - sx) > 8 || Math.abs(clientY - sy) > 8) {
+      longPressMoved.current = true
+      if (longPressTimer.current) clearTimeout(longPressTimer.current)
+    }
+  }
+
+  const onBrowseMouseDown = (e: React.MouseEvent) => {
+    setBrowseDragging(true)
+    browseDragRef.current = { ox: browseX, oy: browseY, sx: e.clientX, sy: e.clientY }
+    startLongPress(e.clientX, e.clientY)
+  }
+  const onBrowseMouseMove = (e: React.MouseEvent) => {
+    cancelLongPress(e.clientX, e.clientY)
+    if (!browseDragging) return
+    const { ox, oy, sx, sy } = browseDragRef.current
+    setBrowseX(ox + e.clientX - sx); setBrowseY(oy + e.clientY - sy)
+  }
+  const onBrowseMouseUp = () => {
+    setBrowseDragging(false)
+    if (longPressTimer.current) clearTimeout(longPressTimer.current)
+  }
+  const onBrowseTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0]
+    setBrowseDragging(true)
+    browseDragRef.current = { ox: browseX, oy: browseY, sx: t.clientX, sy: t.clientY }
+    startLongPress(t.clientX, t.clientY)
+  }
+  const onBrowseTouchMove = (e: React.TouchEvent) => {
+    const t = e.touches[0]
+    cancelLongPress(t.clientX, t.clientY)
+    if (!browseDragging) return
+    const { ox, oy, sx, sy } = browseDragRef.current
+    setBrowseX(ox + t.clientX - sx); setBrowseY(oy + t.clientY - sy)
+  }
+  const onBrowseTouchEnd = () => {
+    setBrowseDragging(false)
+    if (longPressTimer.current) clearTimeout(longPressTimer.current)
+  }
 
   const filters = ['전체', '영업중', '저가순', '행사중 🎉', '24시간']
 
@@ -209,6 +269,7 @@ export default function MainHome({ navigate }: Props) {
   // ── BROWSE MODE ───────────────────────────────────────────────────────────
   return (
     <div
+      ref={containerRef}
       className="relative w-full h-full overflow-hidden"
       style={{ cursor: browseDragging ? 'grabbing' : 'default', userSelect: 'none' }}
       onMouseDown={onBrowseMouseDown} onMouseMove={onBrowseMouseMove} onMouseUp={onBrowseMouseUp} onMouseLeave={onBrowseMouseUp}
@@ -317,6 +378,16 @@ export default function MainHome({ navigate }: Props) {
       <div className="absolute inset-x-0 bottom-0 z-30">
         <TabBar activePage="home" navigate={navigate} />
       </div>
+
+      {longPressPin && (
+        <LongPressAliasSheet
+          pinX={longPressPin.x}
+          pinY={longPressPin.y}
+          address={getLongPressAddress(longPressPin.x, longPressPin.y)}
+          onConfirm={() => { setLongPressPin(null); navigate('alias-confirm') }}
+          onClose={() => setLongPressPin(null)}
+        />
+      )}
     </div>
   )
 }

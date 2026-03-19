@@ -4,6 +4,7 @@ import TabBar from '../components/TabBar'
 import MiniCard from '../components/MiniCard'
 import SwipeReveal from '../components/SwipeReveal'
 import { sharePlace } from '../utils/share'
+import LongPressAliasSheet from '../components/LongPressAliasSheet'
 
 interface Props {
   navigate: (to: Page) => void
@@ -107,17 +108,72 @@ export default function SearchResults({ navigate, setSelectedHasAlias }: Props) 
   const [mapDragging, setMapDragging] = useState(false)
   const dragRef = useRef({ ox: 0, oy: 0, sx: 0, sy: 0 })
 
-  const onMouseDown = (e: React.MouseEvent) => { setMapDragging(true); dragRef.current = { ox: mapX, oy: mapY, sx: e.clientX, sy: e.clientY } }
-  const onMouseMove = (e: React.MouseEvent) => { if (!mapDragging) return; const { ox, oy, sx, sy } = dragRef.current; setMapX(ox + e.clientX - sx); setMapY(oy + e.clientY - sy) }
-  const onMouseUp = () => setMapDragging(false)
-  const onTouchStart = (e: React.TouchEvent) => { const t = e.touches[0]; setMapDragging(true); dragRef.current = { ox: mapX, oy: mapY, sx: t.clientX, sy: t.clientY } }
-  const onTouchMove = (e: React.TouchEvent) => { if (!mapDragging) return; const t = e.touches[0]; const { ox, oy, sx, sy } = dragRef.current; setMapX(ox + t.clientX - sx); setMapY(oy + t.clientY - sy) }
-  const onTouchEnd = () => setMapDragging(false)
+  // Long-press state
+  const [longPressPin, setLongPressPin] = useState<{ x: number; y: number } | null>(null)
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const longPressMoved = useRef(false)
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+
+  const getLongPressAddress = (x: number, y: number) => {
+    const addresses = [
+      '서울 강동구 천호대로 211', '서울 강동구 명일로 55', '서울 강동구 올림픽로 456',
+      '서울 강동구 성내동 78', '서울 강동구 고덕로 22',
+    ]
+    return addresses[Math.abs(Math.floor(x / 80 + y / 100)) % addresses.length]
+  }
+
+  const startLongPress = (clientX: number, clientY: number) => {
+    longPressMoved.current = false
+    longPressTimer.current = setTimeout(() => {
+      if (longPressMoved.current) return
+      const rect = mapContainerRef.current?.getBoundingClientRect()
+      if (!rect) return
+      setLongPressPin({ x: clientX - rect.left, y: clientY - rect.top })
+      setMapDragging(false)
+    }, 500)
+  }
+
+  const cancelLongPress = (clientX: number, clientY: number) => {
+    const { sx, sy } = dragRef.current
+    if (Math.abs(clientX - sx) > 8 || Math.abs(clientY - sy) > 8) {
+      longPressMoved.current = true
+      if (longPressTimer.current) clearTimeout(longPressTimer.current)
+    }
+  }
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    setMapDragging(true); dragRef.current = { ox: mapX, oy: mapY, sx: e.clientX, sy: e.clientY }
+    startLongPress(e.clientX, e.clientY)
+  }
+  const onMouseMove = (e: React.MouseEvent) => {
+    cancelLongPress(e.clientX, e.clientY)
+    if (!mapDragging) return
+    const { ox, oy, sx, sy } = dragRef.current; setMapX(ox + e.clientX - sx); setMapY(oy + e.clientY - sy)
+  }
+  const onMouseUp = () => {
+    setMapDragging(false)
+    if (longPressTimer.current) clearTimeout(longPressTimer.current)
+  }
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0]; setMapDragging(true); dragRef.current = { ox: mapX, oy: mapY, sx: t.clientX, sy: t.clientY }
+    startLongPress(t.clientX, t.clientY)
+  }
+  const onTouchMove = (e: React.TouchEvent) => {
+    const t = e.touches[0]
+    cancelLongPress(t.clientX, t.clientY)
+    if (!mapDragging) return
+    const { ox, oy, sx, sy } = dragRef.current; setMapX(ox + t.clientX - sx); setMapY(oy + t.clientY - sy)
+  }
+  const onTouchEnd = () => {
+    setMapDragging(false)
+    if (longPressTimer.current) clearTimeout(longPressTimer.current)
+  }
 
   return (
     <div className="relative w-full h-full overflow-hidden flex flex-col">
       {/* Full-screen map — draggable */}
       <div
+        ref={mapContainerRef}
         className="absolute inset-0 z-0"
         style={{ cursor: mapDragging ? 'grabbing' : 'grab', userSelect: 'none' }}
         onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseUp={onMouseUp} onMouseLeave={onMouseUp}
@@ -229,6 +285,16 @@ export default function SearchResults({ navigate, setSelectedHasAlias }: Props) 
       {/* Mini card overlay */}
       {showMini && (
         <MiniCard onClose={() => setShowMini(false)} onDetail={() => navigate('detail')} />
+      )}
+
+      {longPressPin && (
+        <LongPressAliasSheet
+          pinX={longPressPin.x}
+          pinY={longPressPin.y}
+          address={getLongPressAddress(longPressPin.x, longPressPin.y)}
+          onConfirm={() => { setLongPressPin(null); navigate('alias-confirm') }}
+          onClose={() => setLongPressPin(null)}
+        />
       )}
     </div>
   )
