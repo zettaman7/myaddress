@@ -1,5 +1,8 @@
 import { useRef } from 'react'
 import { Page } from '../App'
+import { sharePlace } from '../utils/share'
+
+const PLACE = { alias: '강동구 가성비 PC방', name: '강동구 가성비 PC방', address: '서울 강동구 천호대로 1071' }
 
 interface Props {
   navigate: (to: Page) => void
@@ -47,7 +50,8 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
         <button onClick={() => navigate('search')}
                 className="absolute flex items-center justify-center rounded-xl text-white text-xl z-10"
                 style={{ left: 20, top: 72, width: 40, height: 40, backgroundColor: 'rgba(0,0,0,0.4)' }}>←</button>
-        <button className="absolute flex items-center justify-center rounded-xl text-white text-xl z-10"
+        <button onClick={() => sharePlace(PLACE)}
+                className="absolute flex items-center justify-center rounded-xl text-white text-xl z-10"
                 style={{ right: 20, top: 72, width: 40, height: 40, backgroundColor: 'rgba(0,0,0,0.4)' }}>↑</button>
 
         {/* Alias badge row (bottom of hero) */}

@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { Page } from '../App'
 import TabBar from '../components/TabBar'
 import MiniCard from '../components/MiniCard'
+import { sharePlace } from '../utils/share'
 
 interface Props {
   navigate: (to: Page) => void
@@ -70,6 +71,7 @@ const cards = [
     iconBg: '#EFF6FF',
     alias: '강동구 가성비 PC방',
     original: '하이프PC방',
+    address: '서울 강동구 천호대로 1071',
     meta: '⭐ 4.4  ·  🟢 영업중  ·  📍 0.4km  ·  ₩1,000/hr',
     tags: '#24시간  #학생할인  #고사양PC',
     reason: '💡 가격 우선 검색에 최적 · 평가 4.4 · 거리 0.4km',
@@ -83,6 +85,7 @@ const cards = [
     iconBg: '#F1F5F9',
     alias: '암사역 저렴한 PC방',
     original: '마포 PC파크',
+    address: '서울 강동구 암사동 123',
     meta: '⭐ 4.5  ·  🟢 영업중  ·  📍 1.2km  ·  ₩1,200/hr',
     tags: '#24시간  #RTX석',
     reason: '💡 가격 2위 · 평가 4.5 · 거리 1.2km',
@@ -201,10 +204,15 @@ export default function SearchResults({ navigate, setSelectedHasAlias }: Props) 
                 <div className="flex-1 min-w-0 flex flex-col gap-0.5">
                   <div className="flex items-center justify-between">
                     <span className="text-[13px] font-bold" style={{ color: '#1E3A5F' }}>{c.alias}</span>
-                    {c.badge && (
-                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
-                            style={{ backgroundColor: c.badgeBg, color: c.badgeColor }}>{c.badge}</span>
-                    )}
+                    <div className="flex items-center gap-1.5">
+                      {c.badge && (
+                        <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded"
+                              style={{ backgroundColor: c.badgeBg, color: c.badgeColor }}>{c.badge}</span>
+                      )}
+                      <button onClick={e => { e.stopPropagation(); sharePlace({ alias: c.alias, name: c.original, address: c.address }) }}
+                              className="w-7 h-7 rounded-full flex items-center justify-center text-[13px]"
+                              style={{ backgroundColor: '#EFF6FF', color: '#2563EB' }}>↑</button>
+                    </div>
                   </div>
                   <span className="text-[11px]" style={{ color: '#64748B' }}>{c.original}</span>
                   <span className="text-[10px]" style={{ color: '#64748B' }}>{c.meta}</span>

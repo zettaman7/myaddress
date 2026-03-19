@@ -1,3 +1,7 @@
+import { sharePlace } from '../utils/share'
+
+const MINI_PLACE = { alias: '강동구 가성비 PC방', name: '하이프PC방', address: '서울 강동구 천호대로 1071' }
+
 interface Props {
   onClose: () => void
   onDetail: () => void
@@ -68,12 +72,19 @@ export default function MiniCard({ onClose, onDetail }: Props) {
           <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold" style={{ backgroundColor: '#E2E8F0', color: '#64748B' }}>거리</span>
         </div>
 
-        {/* Detail button */}
-        <button onClick={onDetail}
-                className="w-full h-12 rounded-xl flex items-center justify-center gap-2 text-[14px] font-bold text-white"
-                style={{ backgroundColor: '#2563EB' }}>
-          상세보기  →
-        </button>
+        {/* Buttons */}
+        <div className="flex gap-2">
+          <button onClick={() => sharePlace(MINI_PLACE)}
+                  className="h-12 px-4 rounded-xl flex items-center justify-center gap-1.5 text-[14px] font-bold flex-shrink-0"
+                  style={{ backgroundColor: '#EFF6FF', color: '#2563EB' }}>
+            ↑ 공유
+          </button>
+          <button onClick={onDetail}
+                  className="flex-1 h-12 rounded-xl flex items-center justify-center gap-2 text-[14px] font-bold text-white"
+                  style={{ backgroundColor: '#2563EB' }}>
+            상세보기  →
+          </button>
+        </div>
       </div>
     </>
   )
