@@ -156,6 +156,7 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
     if (longPressTimer.current) clearTimeout(longPressTimer.current)
   }
   const onTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault()
     const t = e.touches[0]; setMapDragging(true); dragRef.current = { ox: mapX, oy: mapY, sx: t.clientX, sy: t.clientY }
     startLongPress(t.clientX, t.clientY)
   }
@@ -176,7 +177,8 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
       <div
         ref={mapContainerRef}
         className="absolute inset-0 z-0"
-        style={{ cursor: mapDragging ? 'grabbing' : 'grab', userSelect: 'none' }}
+        style={{ cursor: mapDragging ? 'grabbing' : 'grab', userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none', touchAction: 'none' } as React.CSSProperties}
+        onContextMenu={e => e.preventDefault()}
         onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseUp={onMouseUp} onMouseLeave={onMouseUp}
         onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
       >

@@ -154,6 +154,7 @@ export default function MainHome({ navigate, setAliasInitOffset }: Props) {
     if (longPressTimer.current) clearTimeout(longPressTimer.current)
   }
   const onBrowseTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault()
     const t = e.touches[0]
     setBrowseDragging(true)
     browseDragRef.current = { ox: browseX, oy: browseY, sx: t.clientX, sy: t.clientY }
@@ -274,7 +275,8 @@ export default function MainHome({ navigate, setAliasInitOffset }: Props) {
     <div
       ref={containerRef}
       className="relative w-full h-full overflow-hidden"
-      style={{ cursor: browseDragging ? 'grabbing' : 'default', userSelect: 'none' }}
+      style={{ cursor: browseDragging ? 'grabbing' : 'default', userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none', touchAction: 'none' } as React.CSSProperties}
+      onContextMenu={e => e.preventDefault()}
       onMouseDown={onBrowseMouseDown} onMouseMove={onBrowseMouseMove} onMouseUp={onBrowseMouseUp} onMouseLeave={onBrowseMouseUp}
       onTouchStart={onBrowseTouchStart} onTouchMove={onBrowseTouchMove} onTouchEnd={onBrowseTouchEnd}
     >
