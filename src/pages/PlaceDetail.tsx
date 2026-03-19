@@ -5,6 +5,7 @@ interface Props {
   navigate: (to: Page) => void
   hasAlias?: boolean
   setAliasEditReturn: (v: 'detail' | 'mypage') => void
+  setPhotoIndex: (i: number) => void
 }
 
 const HERO_IMG = '/images/dTADN.jpeg'
@@ -21,7 +22,7 @@ const photos = [
   { url: '/images/ADAIP.jpeg', label: '주차장' },
 ]
 
-export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditReturn }: Props) {
+export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditReturn, setPhotoIndex }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -99,14 +100,14 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
           <div className="flex items-center justify-between px-5 mb-2">
             <span className="text-[13px] font-bold" style={{ color: '#0F172A' }}>사진 ({photos.length})</span>
             <button className="text-[12px] font-semibold" style={{ color: '#2563EB' }}
-                    onClick={() => navigate('photo-view')}>전체보기</button>
+                    onClick={() => { setPhotoIndex(0); navigate('photo-view') }}>전체보기</button>
           </div>
           <div ref={scrollRef}
                className="flex gap-2 px-5 overflow-x-auto"
                style={{ scrollbarWidth: 'none' }}>
             {photos.map((p, i) => (
               <button key={i}
-                      onClick={() => navigate('photo-view')}
+                      onClick={() => { setPhotoIndex(i); navigate('photo-view') }}
                       className="flex-shrink-0 rounded-xl overflow-hidden relative"
                       style={{ width: 115, height: 90 }}>
                 <img src={p.url} alt={p.label} className="w-full h-full object-cover" />

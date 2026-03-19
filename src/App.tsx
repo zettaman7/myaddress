@@ -25,6 +25,7 @@ export default function App() {
   const [page, setPage] = useState<Page>('home')
   const [selectedHasAlias, setSelectedHasAlias] = useState(false)
   const [aliasEditReturn, setAliasEditReturn] = useState<'detail' | 'mypage'>('mypage')
+  const [photoIndex, setPhotoIndex] = useState(0)
   const navigate = (to: Page) => setPage(to)
 
   return (
@@ -32,8 +33,8 @@ export default function App() {
       <div className="relative w-full max-w-[390px] h-screen max-h-[844px] overflow-hidden bg-white shadow-2xl">
         {page === 'home'            && <MainHome navigate={navigate} />}
         {page === 'search'          && <SearchResults navigate={navigate} setSelectedHasAlias={setSelectedHasAlias} />}
-        {page === 'detail'          && <PlaceDetail navigate={navigate} hasAlias={selectedHasAlias} setAliasEditReturn={setAliasEditReturn} />}
-        {page === 'photo-view'      && <PhotoViewer navigate={navigate} />}
+        {page === 'detail'          && <PlaceDetail navigate={navigate} hasAlias={selectedHasAlias} setAliasEditReturn={setAliasEditReturn} setPhotoIndex={setPhotoIndex} />}
+        {page === 'photo-view'      && <PhotoViewer navigate={navigate} initialIndex={photoIndex} />}
         {page === 'alias-select'    && <AliasConfirm navigate={navigate} startInSelect />}
         {page === 'alias-confirm'   && <AliasConfirm navigate={navigate} />}
         {page === 'register'        && <AliasRegister navigate={navigate} />}

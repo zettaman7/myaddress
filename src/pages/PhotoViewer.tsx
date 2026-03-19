@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { Page } from '../App'
 
-interface Props { navigate: (to: Page) => void }
+interface Props { navigate: (to: Page) => void; initialIndex?: number }
 
 const photos = [
   { url: '/images/NvcCz.jpeg', label: '내부 전경' },
@@ -15,30 +15,35 @@ const photos = [
   { url: '/images/ADAIP.jpeg', label: '주차장' },
 ]
 
-export default function PhotoViewer({ navigate }: Props) {
-  const [current, setCurrent] = useState(0)
+export default function PhotoViewer({ navigate, initialIndex = 0 }: Props) {
+  const [current, setCurrent] = useState(initialIndex)
   const [dragX, setDragX] = useState(0)
-  const dragRef = useRef<{ startX: number; dragging: boolean }>({ startX: 0, dragging: false })
+  const [dragging, setDragging] = useState(false)
+  const startX = useRef(0)
 
-  const goTo = (i: number) => setCurrent(Math.max(0, Math.min(photos.length - 1, i)))
+  const goTo = (i: number) => {
+    setCurrent(Math.max(0, Math.min(photos.length - 1, i)))
+    setDragX(0)
+  }
 
   const onStart = (x: number) => {
-    dragRef.current = { startX: x, dragging: true }
-    setDragX(0)
+    startX.current = x
+    setDragging(true)
   }
   const onMove = (x: number) => {
-    if (!dragRef.current.dragging) return
-    setDragX(x - dragRef.current.startX)
+    if (!dragging) return
+    setDragX(x - startX.current)
   }
   const onEnd = () => {
-    if (!dragRef.current.dragging) return
-    dragRef.current.dragging = false
-    if (dragX < -50) goTo(current + 1)
-    else if (dragX > 50) goTo(current - 1)
-    setDragX(0)
+    if (!dragging) return
+    setDragging(false)
+    if (dragX < -60 && current < photos.length - 1) goTo(current + 1)
+    else if (dragX > 60 && current > 0) goTo(current - 1)
+    else setDragX(0)
   }
 
-  const p = photos[current]
+  // strip offset: each photo is 100vw wide, drag offsets on top
+  const stripX = -current * 100 // in vw units
 
   return (
     <div className="w-full h-full flex flex-col bg-black">
@@ -53,31 +58,47 @@ export default function PhotoViewer({ navigate }: Props) {
         <div className="w-9" />
       </div>
 
-      {/* Main photo — draggable */}
-      <div className="flex-1 relative overflow-hidden"
-           style={{ cursor: 'grab' }}
+      {/* Swipeable photo strip */}
+      <div className="flex-1 overflow-hidden relative"
+           style={{ cursor: dragging ? 'grabbing' : 'grab' }}
            onMouseDown={e => onStart(e.clientX)}
            onMouseMove={e => onMove(e.clientX)}
            onMouseUp={onEnd}
            onMouseLeave={onEnd}
            onTouchStart={e => onStart(e.touches[0].clientX)}
-           onTouchMove={e => onMove(e.touches[0].clientX)}
+           onTouchMove={e => { e.preventDefault(); onMove(e.touches[0].clientX) }}
            onTouchEnd={onEnd}>
-        <img src={p.url} alt={p.label}
-             className="w-full h-full object-cover select-none"
-             style={{ transform: `translateX(${dragX}px)`, transition: dragX === 0 ? 'transform 0.2s' : 'none' }}
-             draggable={false} />
-        <span className="absolute bottom-4 left-4 text-white text-[14px] font-semibold px-3 py-1.5 rounded-xl"
-              style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>{p.label}</span>
 
+        {/* Strip containing all photos side by side */}
+        <div className="flex h-full"
+             style={{
+               width: `${photos.length * 100}%`,
+               transform: `translateX(calc(${stripX / photos.length}% + ${dragX}px))`,
+               transition: dragging ? 'none' : 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+             }}>
+          {photos.map((p, i) => (
+            <div key={i} className="relative h-full flex-shrink-0"
+                 style={{ width: `${100 / photos.length}%` }}>
+              <img src={p.url} alt={p.label}
+                   className="w-full h-full object-cover select-none"
+                   draggable={false} />
+              {i === current && (
+                <span className="absolute bottom-4 left-4 text-white text-[14px] font-semibold px-3 py-1.5 rounded-xl"
+                      style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>{p.label}</span>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Arrow buttons */}
         {current > 0 && (
           <button onClick={() => goTo(current - 1)}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white text-xl"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white text-xl z-10"
                   style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>‹</button>
         )}
         {current < photos.length - 1 && (
           <button onClick={() => goTo(current + 1)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white text-xl"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center text-white text-xl z-10"
                   style={{ backgroundColor: 'rgba(0,0,0,0.4)' }}>›</button>
         )}
       </div>
@@ -85,7 +106,7 @@ export default function PhotoViewer({ navigate }: Props) {
       {/* Dots */}
       <div className="flex-shrink-0 flex items-center justify-center gap-1.5 py-4">
         {photos.map((_, i) => (
-          <button key={i} onClick={() => setCurrent(i)}
+          <button key={i} onClick={() => goTo(i)}
                   className="rounded-full transition-all"
                   style={{ width: i === current ? 20 : 6, height: 6, backgroundColor: i === current ? '#FFFFFF' : 'rgba(255,255,255,0.35)' }} />
         ))}
