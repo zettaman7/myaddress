@@ -4,6 +4,7 @@ import { Page } from '../App'
 interface Props {
   navigate: (to: Page) => void
   startInSelect?: boolean   // true = FAB flow (show shop list first)
+  initialOffset?: { x: number; y: number }  // long-press initial map position
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -65,15 +66,15 @@ function StepHeader({ onBack }: { onBack: () => void }) {
 }
 
 // ─── Main component ────────────────────────────────────────────────────────────
-export default function AliasConfirm({ navigate, startInSelect = false }: Props) {
+export default function AliasConfirm({ navigate, startInSelect = false, initialOffset }: Props) {
   const [mode, setMode] = useState<'select' | 'confirm'>(startInSelect ? 'select' : 'confirm')
   const [hasShops, setHasShops] = useState(true)
   const [selectedShop, setSelectedShop] = useState<ShopInfo>(NEARBY_SHOPS[0])
   const [selectedAddress, setSelectedAddress] = useState({ name: '강남 PC프라자', address: '서울 강남구 테헤란로 152, 지하 1층' })
 
-  // Map drag state (confirm mode)
-  const [mapOffsetX, setMapOffsetX] = useState(0)
-  const [mapOffsetY, setMapOffsetY] = useState(0)
+  // Map drag state (confirm mode) — initialOffset from long-press
+  const [mapOffsetX, setMapOffsetX] = useState(initialOffset?.x ?? 0)
+  const [mapOffsetY, setMapOffsetY] = useState(initialOffset?.y ?? 0)
   const [mapDragging, setMapDragging] = useState(false)
   const mapDragOrigin = useRef({ ox: 0, oy: 0, sx: 0, sy: 0 })
 

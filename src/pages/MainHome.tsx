@@ -3,7 +3,10 @@ import { Page } from '../App'
 import TabBar from '../components/TabBar'
 import LongPressAliasSheet from '../components/LongPressAliasSheet'
 
-interface Props { navigate: (to: Page) => void }
+interface Props {
+  navigate: (to: Page) => void
+  setAliasInitOffset: (v: { x: number; y: number }) => void
+}
 
 // ─── CSS map ──────────────────────────────────────────────────────────────────
 function NaverMap({ offsetX = 0, offsetY = 0 }: { offsetX?: number; offsetY?: number }) {
@@ -85,7 +88,7 @@ function resolveAddress(offsetX: number, offsetY: number): PlaceInfo {
 
 type MapMode = 'browse' | 'pin-adjust'
 
-export default function MainHome({ navigate }: Props) {
+export default function MainHome({ navigate, setAliasInitOffset }: Props) {
   const [activeFilter, setActiveFilter] = useState(0)
   const [selectedPlace, setSelectedPlace] = useState<PlaceInfo | null>(null)
   const [mode, setMode] = useState<MapMode>('browse')
@@ -384,7 +387,11 @@ export default function MainHome({ navigate }: Props) {
           pinX={longPressPin.x}
           pinY={longPressPin.y}
           address={getLongPressAddress(longPressPin.x, longPressPin.y)}
-          onConfirm={() => { setLongPressPin(null); navigate('alias-confirm') }}
+          onConfirm={() => {
+            setAliasInitOffset({ x: 195 - longPressPin.x, y: 265 - longPressPin.y })
+            setLongPressPin(null)
+            navigate('alias-confirm')
+          }}
           onClose={() => setLongPressPin(null)}
         />
       )}

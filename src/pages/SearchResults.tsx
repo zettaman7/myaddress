@@ -9,6 +9,7 @@ import LongPressAliasSheet from '../components/LongPressAliasSheet'
 interface Props {
   navigate: (to: Page) => void
   setSelectedHasAlias: (v: boolean) => void
+  setAliasInitOffset: (v: { x: number; y: number }) => void
 }
 
 function NaverMap() {
@@ -98,7 +99,7 @@ const cards = [
   },
 ]
 
-export default function SearchResults({ navigate, setSelectedHasAlias }: Props) {
+export default function SearchResults({ navigate, setSelectedHasAlias, setAliasInitOffset }: Props) {
   const [showMini, setShowMini] = useState(false)
   const [activeFilter, setActiveFilter] = useState(0)
   const filters = ['✓ 영업중', '저가순', '행사중', '고사양석']
@@ -292,7 +293,11 @@ export default function SearchResults({ navigate, setSelectedHasAlias }: Props) 
           pinX={longPressPin.x}
           pinY={longPressPin.y}
           address={getLongPressAddress(longPressPin.x, longPressPin.y)}
-          onConfirm={() => { setLongPressPin(null); navigate('alias-confirm') }}
+          onConfirm={() => {
+            setAliasInitOffset({ x: 195 - longPressPin.x, y: 265 - longPressPin.y })
+            setLongPressPin(null)
+            navigate('alias-confirm')
+          }}
           onClose={() => setLongPressPin(null)}
         />
       )}
