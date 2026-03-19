@@ -1,6 +1,7 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { Page } from '../App'
 import { sharePlace } from '../utils/share'
+import NavAppSheet from '../components/NavAppSheet'
 
 const PLACE = { alias: '강동구 가성비 PC방', name: '강동구 가성비 PC방', address: '서울 강동구 천호대로 1071' }
 
@@ -27,6 +28,7 @@ const photos = [
 
 export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditReturn, setPhotoIndex }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
+  const [showNavSheet, setShowNavSheet] = useState(false)
 
   return (
     <div className="w-full h-full flex flex-col bg-white">
@@ -164,17 +166,23 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
       {/* ── Bottom action bar ─────────────────────────────────────────────── */}
       <div className="flex-shrink-0 flex gap-3 px-5 py-3 bg-white border-t border-slate-100">
         {[
-          { icon: '🗺', label: '길안내', bg: '#EFF6FF', color: '#2563EB' },
-          { icon: '📞', label: '전화',   bg: '#F0FDF4', color: '#059669' },
-          { icon: '🔖', label: '저장',   bg: '#F8FAFC', color: '#64748B' },
+          { icon: '🗺', label: '길안내', bg: '#EFF6FF', color: '#2563EB', onClick: () => setShowNavSheet(true) },
+          { icon: '📞', label: '전화',   bg: '#F0FDF4', color: '#059669', onClick: () => {} },
+          { icon: '🔖', label: '저장',   bg: '#F8FAFC', color: '#64748B', onClick: () => {} },
         ].map((btn, i) => (
-          <button key={i} className="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl py-3 text-[11px] font-semibold"
+          <button key={i} onClick={btn.onClick}
+                  className="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl py-3 text-[11px] font-semibold"
                   style={{ backgroundColor: btn.bg, color: btn.color }}>
             <span className="text-xl leading-none">{btn.icon}</span>
             <span>{btn.label}</span>
           </button>
         ))}
       </div>
+
+      {/* 길안내 앱 선택 바텀시트 */}
+      {showNavSheet && (
+        <NavAppSheet address={PLACE.address} onClose={() => setShowNavSheet(false)} />
+      )}
     </div>
   )
 }
