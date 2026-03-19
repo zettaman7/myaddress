@@ -76,10 +76,33 @@ function CrosshairPin({ dragging }: { dragging: boolean }) {
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
-interface PlaceInfo { name: string; address: string }
-const TAPPABLE_PLACE: PlaceInfo = { name: '강남 PC프라자', address: '서울 강남구 테헤란로 152, 지하 1층' }
+interface PinPlace {
+  id: number; x: number; y: number; size: number; opacity: number
+  name: string; alias: string; address: string
+  rating: string; status: string; dist: string; price: string
+  tags: string; hasAlias: boolean; icon: string
+}
 
-function resolveAddress(offsetX: number, offsetY: number): PlaceInfo {
+const MAP_PINS: PinPlace[] = [
+  { id: 1, x: 135, y: 255, size: 20, opacity: 1,
+    name: '하이프PC방', alias: '강동구 가성비 PC방', address: '서울 강동구 천호대로 1071',
+    rating: '4.7', status: '영업중', dist: '0.3km', price: '₩1,000/hr',
+    tags: '#24시간 #학생할인 #고사양PC', hasAlias: true, icon: '🖥' },
+  { id: 2, x: 257, y: 370, size: 14, opacity: 0.8,
+    name: '암사역 게임존', alias: '암사역 저렴한 PC방', address: '서울 강동구 암사동 123',
+    rating: '4.5', status: '영업중', dist: '1.2km', price: '₩1,200/hr',
+    tags: '#24시간 #RTX석', hasAlias: false, icon: '🖥' },
+  { id: 3, x: 83, y: 442, size: 12, opacity: 0.65,
+    name: '강동게임센터', alias: '', address: '서울 강동구 성내로 12',
+    rating: '4.2', status: '영업중', dist: '0.8km', price: '₩1,500/hr',
+    tags: '#금연 #초보환영', hasAlias: false, icon: '🎮' },
+  { id: 4, x: 309, y: 295, size: 12, opacity: 0.65,
+    name: 'PC파크 강동점', alias: '', address: '서울 강동구 올림픽로 456',
+    rating: '4.0', status: '마감', dist: '1.5km', price: '₩1,300/hr',
+    tags: '#고사양 #주차가능', hasAlias: false, icon: '💻' },
+]
+
+function resolveAddress(offsetX: number, offsetY: number) {
   if (offsetX === 0 && offsetY === 0) return { name: '강남 PC프라자', address: '서울 강남구 테헤란로 152, 지하 1층' }
   if (offsetX > 40)  return { name: '강남 PC프라자 별관', address: '서울 강남구 테헤란로 154, 1층' }
   if (offsetX < -40) return { name: '테헤란 PC방', address: '서울 강남구 테헤란로 148, 2층' }
@@ -90,7 +113,7 @@ type MapMode = 'browse' | 'pin-adjust'
 
 export default function MainHome({ navigate, setAliasInitOffset }: Props) {
   const [activeFilter, setActiveFilter] = useState(0)
-  const [selectedPlace, setSelectedPlace] = useState<PlaceInfo | null>(null)
+  const [selectedPin, setSelectedPin] = useState<PinPlace | null>(null)
   const [mode, setMode] = useState<MapMode>('browse')
   // pin-adjust drag state
   const [offsetX, setOffsetX] = useState(0)
@@ -283,14 +306,20 @@ export default function MainHome({ navigate, setAliasInitOffset }: Props) {
       {/* Moving layer: map + pins */}
       <div className="absolute inset-0" style={{ transform: `translate(${browseX}px, ${browseY}px)`, transition: browseDragging ? 'none' : 'transform 0.1s ease' }}>
         <NaverMap />
-        <LocationPin x={135} y={255} size={20} label="강동구 가성비 PC방 [91]" />
-        <LocationPin x={257} y={370} size={14} opacity={0.8} />
-        <LocationPin x={83}  y={442} size={12} opacity={0.65} />
-        <LocationPin x={309} y={295} size={12} opacity={0.65} />
-        {selectedPlace && <LocationPin x={196} y={338} size={22} label="강남 PC프라자" selected />}
-        {/* Tappable building */}
-        <button onClick={() => setSelectedPlace(TAPPABLE_PLACE)} className="absolute z-10"
-                style={{ left: '45%', top: '43%', width: '18%', height: '15%', opacity: 0 }} />
+        {MAP_PINS.map(pin => (
+          <button key={pin.id} className="absolute flex flex-col items-center z-10 pointer-events-auto"
+                  style={{ left: pin.x, top: pin.y, opacity: pin.opacity, background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  onClick={e => { e.stopPropagation(); if (!longPressMoved.current) setSelectedPin(pin) }}>
+            {pin.hasAlias && (
+              <div className="absolute whitespace-nowrap px-1.5 py-0.5 rounded shadow text-[9px] font-bold"
+                   style={{ top: -22, left: '50%', transform: 'translateX(-50%)', backgroundColor: '#FFFFFF', color: '#0F172A', boxShadow: '0 1px 4px rgba(0,0,0,0.18)' }}>
+                {pin.alias}
+              </div>
+            )}
+            <div className="rounded-full" style={{ width: pin.size, height: pin.size, backgroundColor: selectedPin?.id === pin.id ? '#2563EB' : '#E8563A', border: '2px solid white', boxShadow: '0 2px 6px rgba(0,0,0,0.35)' }} />
+            <div style={{ width: 0, height: 0, borderLeft: `${pin.size * 0.22}px solid transparent`, borderRight: `${pin.size * 0.22}px solid transparent`, borderTop: `${pin.size * 0.38}px solid ${selectedPin?.id === pin.id ? '#2563EB' : '#E8563A'}`, marginTop: -1 }} />
+          </button>
+        ))}
       </div>
 
       <div className="absolute inset-x-0 top-0 pointer-events-none z-10"
@@ -330,13 +359,13 @@ export default function MainHome({ navigate, setAliasInitOffset }: Props) {
         ))}
       </div>
 
-      {selectedPlace && (
+      {selectedPin && (
         <div className="absolute inset-0 z-20" style={{ backgroundColor: 'rgba(0,0,0,0.25)' }}
-             onClick={() => setSelectedPlace(null)} />
+             onClick={() => setSelectedPin(null)} />
       )}
 
       {/* Current location button */}
-      <div className="absolute z-25" style={{ left: 20, bottom: selectedPlace ? 280 : 116, transition: 'bottom 0.3s ease' }}>
+      <div className="absolute z-25" style={{ left: 20, bottom: selectedPin ? 300 : 116, transition: 'bottom 0.3s ease' }}>
         <button className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-full text-sm font-semibold text-slate-700"
                 style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}>
           <span>📍</span><span>현재 위치</span>
@@ -344,7 +373,7 @@ export default function MainHome({ navigate, setAliasInitOffset }: Props) {
       </div>
 
       {/* Register FAB */}
-      {!selectedPlace && (
+      {!selectedPin && (
         <div className="absolute z-25" style={{ right: 20, bottom: 116 }}>
           <button onClick={() => navigate('alias-select')}
                   className="flex items-center gap-2 px-4 py-3 rounded-full text-[13px] font-bold text-white"
@@ -354,29 +383,60 @@ export default function MainHome({ navigate, setAliasInitOffset }: Props) {
         </div>
       )}
 
-      {/* Place bottom sheet */}
-      {selectedPlace && (
-        <div className="absolute inset-x-4 z-30 rounded-2xl flex flex-col gap-3 p-4"
-             style={{ bottom: 100, backgroundColor: '#FFFFFF', boxShadow: '0 -4px 32px rgba(0,0,0,0.22)' }}
+      {/* Pin mini card */}
+      {selectedPin && (
+        <div className="absolute inset-x-4 z-30 rounded-2xl p-4 flex flex-col gap-2.5"
+             style={{ bottom: 104, backgroundColor: '#FFFFFF', boxShadow: '0 -4px 32px rgba(0,0,0,0.22)' }}
              onClick={e => e.stopPropagation()}>
-          <div className="flex items-start gap-2">
-            <div className="flex-1 flex flex-col gap-0.5">
-              <span className="text-[16px] font-extrabold" style={{ color: '#0F172A' }}>{selectedPlace.name}</span>
-              <span className="text-[12px]" style={{ color: '#64748B' }}>📍 {selectedPlace.address}</span>
+          {/* Header */}
+          <div className="flex items-start gap-2.5">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                 style={{ backgroundColor: selectedPin.hasAlias ? '#EFF6FF' : '#FEF3C7' }}>
+              {selectedPin.icon}
             </div>
-            <button onClick={() => setSelectedPlace(null)}
-                    className="w-8 h-8 flex items-center justify-center rounded-full flex-shrink-0"
-                    style={{ backgroundColor: '#F1F5F9', color: '#64748B', fontSize: 16 }}>✕</button>
+            <div className="flex-1 min-w-0">
+              {selectedPin.hasAlias && (
+                <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mb-0.5"
+                      style={{ backgroundColor: '#EFF6FF', color: '#2563EB' }}>
+                  @{selectedPin.alias}
+                </span>
+              )}
+              <p className="text-[15px] font-extrabold truncate" style={{ color: '#0F172A' }}>{selectedPin.name}</p>
+              <p className="text-[11px] truncate" style={{ color: '#64748B' }}>📍 {selectedPin.address}</p>
+            </div>
+            <button onClick={() => setSelectedPin(null)}
+                    className="w-7 h-7 flex items-center justify-center rounded-full flex-shrink-0"
+                    style={{ backgroundColor: '#F1F5F9', color: '#64748B', fontSize: 14 }}>✕</button>
           </div>
-          <div className="flex items-center gap-2 px-3 py-2 rounded-xl" style={{ backgroundColor: '#FEF3C7' }}>
-            <span className="text-[12px] font-semibold" style={{ color: '#D97706' }}>⚠ 아직 별칭이 등록되지 않은 장소입니다</span>
+
+          {/* Info row */}
+          <div className="flex items-center gap-2 text-[11px]" style={{ color: '#475569' }}>
+            <span>⭐ {selectedPin.rating}</span>
+            <span>·</span>
+            <span style={{ color: selectedPin.status === '영업중' ? '#059669' : '#EF4444' }}>
+              🟢 {selectedPin.status}
+            </span>
+            <span>·</span>
+            <span>📍 {selectedPin.dist}</span>
+            <span>·</span>
+            <span className="font-semibold" style={{ color: '#0F172A' }}>{selectedPin.price}</span>
           </div>
-          <span className="text-[11px]" style={{ color: '#94A3B8' }}>별칭을 등록하면 사람들이 이 장소를 더 쉽게 찾을 수 있어요</span>
-          <button onClick={() => { setSelectedPlace(null); navigate('alias-confirm') }}
-                  className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold text-white"
-                  style={{ backgroundColor: '#2563EB' }}>
-            📌 이 장소에 별칭 등록하기
-          </button>
+
+          <p className="text-[11px]" style={{ color: '#94A3B8' }}>{selectedPin.tags}</p>
+
+          {/* Action buttons */}
+          <div className="flex gap-2 pt-0.5">
+            <button onClick={() => { setSelectedPin(null); navigate('alias-confirm') }}
+                    className="flex-1 h-11 rounded-xl text-[13px] font-bold"
+                    style={{ backgroundColor: '#F1F5F9', color: '#374151' }}>
+              {selectedPin.hasAlias ? '✏️ 별칭 편집' : '📌 별칭 등록'}
+            </button>
+            <button onClick={() => { setSelectedPin(null); navigate('detail') }}
+                    className="flex-[2] h-11 rounded-xl text-[13px] font-bold text-white"
+                    style={{ backgroundColor: '#2563EB' }}>
+              상세보기 →
+            </button>
+          </div>
         </div>
       )}
 
