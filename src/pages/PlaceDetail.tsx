@@ -46,22 +46,24 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
           <span className="text-[12px] text-white">▲ WiFi 🔋</span>
         </div>
 
-        {/* Back + share buttons */}
+        {/* Back button */}
         <button onClick={() => navigate('search')}
                 className="absolute flex items-center justify-center rounded-xl text-white text-xl z-10"
                 style={{ left: 20, top: 72, width: 40, height: 40, backgroundColor: 'rgba(0,0,0,0.4)' }}>←</button>
-        <button onClick={() => sharePlace(PLACE)}
-                className="absolute flex items-center justify-center rounded-xl text-white text-xl z-10"
-                style={{ right: 20, top: 72, width: 40, height: 40, backgroundColor: 'rgba(0,0,0,0.4)' }}>↑</button>
 
-        {/* Alias badge row (bottom of hero) */}
-        <div className="absolute bottom-4 left-5 flex gap-2 z-10">
+        {/* Alias badge row + share button (bottom of hero) */}
+        <div className="absolute bottom-4 left-5 right-5 flex items-center gap-2 z-10">
           {hasAlias && (
             <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold text-white"
                   style={{ backgroundColor: '#2563EB' }}>@강동구 가성비 PC방</span>
           )}
           <span className="px-2.5 py-1 rounded-lg text-[11px] font-bold text-white"
                 style={{ backgroundColor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}>PC방</span>
+          <button onClick={() => sharePlace(PLACE)}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold text-white"
+                  style={{ backgroundColor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(4px)' }}>
+            ↑ 공유
+          </button>
         </div>
       </div>
 
