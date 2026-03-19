@@ -23,7 +23,7 @@ const apps = [
     name: 'T맵',
     icon: '/images/V7a4v.jpeg',
     getUrl: (addr: string) =>
-      `https://apis.openapi.sk.com/tmap/app/routes?goalname=${encodeURIComponent(addr)}&goal=${encodeURIComponent(addr)}`,
+      `tmap://route?goalname=${encodeURIComponent(addr)}&goal=${encodeURIComponent(addr)}`,
   },
   {
     id: 'google',
