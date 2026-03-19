@@ -23,7 +23,7 @@ const apps = [
     name: 'T맵',
     icon: '/images/V7a4v.jpeg',
     getUrl: (addr: string) =>
-      `tmap://route?goalname=${encodeURIComponent(addr)}&goal=${encodeURIComponent(addr)}`,
+      `tmap://search?name=${encodeURIComponent(addr)}`,
   },
   {
     id: 'google',
