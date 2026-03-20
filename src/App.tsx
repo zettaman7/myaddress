@@ -27,20 +27,22 @@ export default function App() {
   const [aliasEditReturn, setAliasEditReturn] = useState<'detail' | 'mypage'>('mypage')
   const [photoIndex, setPhotoIndex] = useState(0)
   const [aliasInitOffset, setAliasInitOffset] = useState({ x: 0, y: 0 })
+  const [aliasReturnPage, setAliasReturnPage] = useState<Page>('home')
+  const [detailReturnPage, setDetailReturnPage] = useState<Page>('search')
   const navigate = (to: Page) => setPage(to)
 
   return (
     <div className="min-h-screen bg-slate-500 flex items-center justify-center">
       <div className="relative w-full max-w-[390px] h-screen max-h-[844px] overflow-hidden bg-white shadow-2xl">
-        {page === 'home'            && <MainHome navigate={navigate} setAliasInitOffset={setAliasInitOffset} />}
-        {page === 'search'          && <SearchResults navigate={navigate} setSelectedHasAlias={setSelectedHasAlias} setAliasInitOffset={setAliasInitOffset} />}
-        {page === 'detail'          && <PlaceDetail navigate={navigate} hasAlias={selectedHasAlias} setAliasEditReturn={setAliasEditReturn} setPhotoIndex={setPhotoIndex} />}
+        {page === 'home'            && <MainHome navigate={navigate} setAliasInitOffset={setAliasInitOffset} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
+        {page === 'search'          && <SearchResults navigate={navigate} setSelectedHasAlias={setSelectedHasAlias} setAliasInitOffset={setAliasInitOffset} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
+        {page === 'detail'          && <PlaceDetail navigate={navigate} hasAlias={selectedHasAlias} setAliasEditReturn={setAliasEditReturn} setPhotoIndex={setPhotoIndex} returnTo={detailReturnPage} setAliasReturnPage={setAliasReturnPage} />}
         {page === 'photo-view'      && <PhotoViewer navigate={navigate} initialIndex={photoIndex} />}
-        {page === 'alias-select'    && <AliasConfirm navigate={navigate} startInSelect />}
-        {page === 'alias-confirm'   && <AliasConfirm navigate={navigate} initialOffset={aliasInitOffset} />}
-        {page === 'register'        && <AliasRegister navigate={navigate} />}
-        {page === 'alias-detail'    && <AliasDetail navigate={navigate} />}
-        {page === 'alias-final'     && <AliasFinal navigate={navigate} />}
+        {page === 'alias-select'    && <AliasConfirm navigate={navigate} startInSelect returnTo="home" />}
+        {page === 'alias-confirm'   && <AliasConfirm navigate={navigate} initialOffset={aliasInitOffset} returnTo={aliasReturnPage} />}
+        {page === 'register'        && <AliasRegister navigate={navigate} aliasReturnPage={aliasReturnPage} />}
+        {page === 'alias-detail'    && <AliasDetail navigate={navigate} aliasReturnPage={aliasReturnPage} />}
+        {page === 'alias-final'     && <AliasFinal navigate={navigate} aliasReturnPage={aliasReturnPage} />}
         {page === 'event'           && <EventRegister navigate={navigate} />}
         {page === 'event-period'    && <EventPeriod navigate={navigate} />}
         {page === 'event-condition' && <EventCondition navigate={navigate} />}

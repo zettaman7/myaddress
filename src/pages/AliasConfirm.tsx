@@ -5,6 +5,7 @@ interface Props {
   navigate: (to: Page) => void
   startInSelect?: boolean                   // FAB → 주변장소 탭 먼저
   initialOffset?: { x: number; y: number } // 길게 터치 위치
+  returnTo?: Page                           // 뒤로가기 목적지
 }
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -44,7 +45,7 @@ function MapCanvas({ offsetX, offsetY }: { offsetX: number; offsetY: number }) {
 }
 
 // ─── Main component ────────────────────────────────────────────────────────────
-export default function AliasConfirm({ navigate, startInSelect = false, initialOffset }: Props) {
+export default function AliasConfirm({ navigate, startInSelect = false, initialOffset, returnTo = 'home' }: Props) {
   const [activeTab, setActiveTab] = useState<'map' | 'shops'>(startInSelect ? 'shops' : 'map')
   const [selectedShop, setSelectedShop] = useState<ShopInfo | null>(null)
 
@@ -92,7 +93,7 @@ export default function AliasConfirm({ navigate, startInSelect = false, initialO
           <span className="text-[12px]" style={{ color: '#64748B' }}>▲ WiFi 🔋</span>
         </div>
         <div className="flex items-center gap-3 px-5 pb-2">
-          <button onClick={() => navigate('home')}
+          <button onClick={() => navigate(returnTo)}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
                   style={{ backgroundColor: '#F1F5F9', color: '#0F172A' }}>←</button>
           <span className="text-[13px] font-semibold" style={{ color: '#64748B' }}>별칭 등록 1 / 4 단계</span>

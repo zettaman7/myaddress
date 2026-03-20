@@ -70,7 +70,7 @@ export default function EventFinal({ navigate }: Props) {
 
       {/* CTA */}
       <div className="flex-shrink-0 px-5 pb-6 pt-3" style={{ backgroundColor: '#F8FAFC' }}>
-        <button onClick={() => navigate('excel')}
+        <button onClick={() => navigate('mypage')}
                 className="w-full h-14 rounded-2xl flex items-center justify-center text-[15px] font-bold text-white"
                 style={{ backgroundColor: '#059669' }}>
           ✓ 행사 등록 완료

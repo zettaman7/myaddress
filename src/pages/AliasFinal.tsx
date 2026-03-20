@@ -1,8 +1,8 @@
 import { Page } from '../App'
 
-interface Props { navigate: (to: Page) => void }
+interface Props { navigate: (to: Page) => void; aliasReturnPage?: Page }
 
-export default function AliasFinal({ navigate }: Props) {
+export default function AliasFinal({ navigate, aliasReturnPage = 'home' }: Props) {
   return (
     <div className="w-full h-full flex flex-col bg-white">
       {/* Status bar */}
@@ -18,6 +18,10 @@ export default function AliasFinal({ navigate }: Props) {
                 className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0 bg-white"
                 style={{ color: '#1E3A5F' }}>←</button>
         <span className="text-[13px] font-semibold" style={{ color: '#FCD34D' }}>별칭 등록 4 / 4 단계</span>
+        <div className="flex-1" />
+        <button onClick={() => navigate(aliasReturnPage)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-base"
+                style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: '#CBD5E1' }}>✕</button>
       </div>
 
       {/* Progress bar */}

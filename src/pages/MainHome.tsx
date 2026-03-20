@@ -6,6 +6,8 @@ import LongPressAliasSheet from '../components/LongPressAliasSheet'
 interface Props {
   navigate: (to: Page) => void
   setAliasInitOffset: (v: { x: number; y: number }) => void
+  setAliasReturnPage: (p: Page) => void
+  setDetailReturnPage: (p: Page) => void
 }
 
 // ─── CSS map ──────────────────────────────────────────────────────────────────
@@ -111,7 +113,7 @@ function resolveAddress(offsetX: number, offsetY: number) {
 
 type MapMode = 'browse' | 'pin-adjust'
 
-export default function MainHome({ navigate, setAliasInitOffset }: Props) {
+export default function MainHome({ navigate, setAliasInitOffset, setAliasReturnPage, setDetailReturnPage }: Props) {
   const [activeFilter, setActiveFilter] = useState(0)
   const [selectedPin, setSelectedPin] = useState<PinPlace | null>(null)
   const [mode, setMode] = useState<MapMode>('browse')
@@ -232,7 +234,7 @@ export default function MainHome({ navigate, setAliasInitOffset }: Props) {
         {/* Top banner */}
         <div className="absolute inset-x-4 z-30 flex items-center gap-2 px-4 py-3 rounded-2xl pointer-events-auto"
              style={{ top: 62, backgroundColor: 'rgba(15,23,42,0.84)', backdropFilter: 'blur(8px)' }}>
-          <button onClick={() => { setMode('browse'); navigate('alias-select') }}
+          <button onClick={() => { setAliasReturnPage('home'); setMode('browse'); navigate('alias-select') }}
                   className="flex-shrink-0 text-[12px] font-semibold px-2.5 py-1.5 rounded-lg"
                   style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: '#CBD5E1' }}>← 목록</button>
           <div className="flex-1 flex flex-col items-center gap-0.5">
@@ -283,7 +285,7 @@ export default function MainHome({ navigate, setAliasInitOffset }: Props) {
               {isNudged ? '📍 위치 조정 완료' : '📡 GPS 자동 감지 — 현재 위치입니다'}
             </span>
           </div>
-          <button onClick={() => { setMode('browse'); navigate('alias-confirm') }}
+          <button onClick={() => { setAliasReturnPage('home'); setMode('browse'); navigate('alias-confirm') }}
                   className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-bold text-white"
                   style={{ backgroundColor: '#2563EB' }}>
             📌 이 위치로 별칭 등록하기
@@ -375,7 +377,7 @@ export default function MainHome({ navigate, setAliasInitOffset }: Props) {
       {/* Register FAB */}
       {!selectedPin && (
         <div className="absolute z-25" style={{ right: 20, bottom: 116 }}>
-          <button onClick={() => navigate('alias-select')}
+          <button onClick={() => { setAliasReturnPage('home'); navigate('alias-select') }}
                   className="flex items-center gap-2 px-4 py-3 rounded-full text-[13px] font-bold text-white"
                   style={{ backgroundColor: '#2563EB', boxShadow: '0 4px 16px rgba(37,99,235,0.45)' }}>
             <span>+</span><span>별칭 등록</span>
@@ -426,12 +428,12 @@ export default function MainHome({ navigate, setAliasInitOffset }: Props) {
 
           {/* Action buttons */}
           <div className="flex gap-2 pt-0.5">
-            <button onClick={() => { setSelectedPin(null); navigate('alias-confirm') }}
+            <button onClick={() => { setAliasReturnPage('home'); setSelectedPin(null); navigate('alias-confirm') }}
                     className="flex-1 h-11 rounded-xl text-[13px] font-bold"
                     style={{ backgroundColor: '#F1F5F9', color: '#374151' }}>
               {selectedPin.hasAlias ? '✏️ 별칭 편집' : '📌 별칭 등록'}
             </button>
-            <button onClick={() => { setSelectedPin(null); navigate('detail') }}
+            <button onClick={() => { setDetailReturnPage('home'); setSelectedPin(null); navigate('detail') }}
                     className="flex-[2] h-11 rounded-xl text-[13px] font-bold text-white"
                     style={{ backgroundColor: '#2563EB' }}>
               상세보기 →
@@ -450,6 +452,7 @@ export default function MainHome({ navigate, setAliasInitOffset }: Props) {
           pinY={longPressPin.y}
           address={getLongPressAddress(longPressPin.x, longPressPin.y)}
           onConfirm={() => {
+            setAliasReturnPage('home')
             setAliasInitOffset({ x: 195 - longPressPin.x, y: 265 - longPressPin.y })
             setLongPressPin(null)
             navigate('alias-confirm')

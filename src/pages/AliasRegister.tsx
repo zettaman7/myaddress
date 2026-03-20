@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Page } from '../App'
 
-interface Props { navigate: (to: Page) => void }
+interface Props { navigate: (to: Page) => void; aliasReturnPage?: Page }
 
-export default function AliasRegister({ navigate }: Props) {
+export default function AliasRegister({ navigate, aliasReturnPage = 'home' }: Props) {
   const [aliasInput, setAliasInput] = useState('넓고 빠른 게임아지트')
   const autoDistrict = '강남구'
   const fullAlias = `@${autoDistrict} ${aliasInput}`
@@ -24,6 +24,10 @@ export default function AliasRegister({ navigate }: Props) {
                 className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0 bg-white"
                 style={{ color: '#1E3A5F' }}>←</button>
         <span className="text-[13px] font-semibold" style={{ color: '#FCD34D' }}>별칭 등록 2 / 4 단계</span>
+        <div className="flex-1" />
+        <button onClick={() => navigate(aliasReturnPage)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-base"
+                style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: '#CBD5E1' }}>✕</button>
       </div>
 
       {/* Progress bar */}

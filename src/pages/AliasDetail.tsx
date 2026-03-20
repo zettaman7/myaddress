@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Page } from '../App'
 
-interface Props { navigate: (to: Page) => void }
+interface Props { navigate: (to: Page) => void; aliasReturnPage?: Page }
 
 const ALL_TAGS = ['#24시간영업', '#주차가능', '#조용한분위기', '#넓은', '#빠른', '#맛있는', '#다양한', '#메뉴']
 
@@ -10,7 +10,7 @@ const mockPhotos = [
   { bg: 'linear-gradient(135deg, #14532d 0%, #166534 100%)', emoji: '🍜' },
 ]
 
-export default function AliasDetail({ navigate }: Props) {
+export default function AliasDetail({ navigate, aliasReturnPage = 'home' }: Props) {
   const [selectedTags, setSelectedTags] = useState(ALL_TAGS.slice(0, 3))
   const toggleTag = (t: string) =>
     setSelectedTags(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t])
@@ -30,6 +30,10 @@ export default function AliasDetail({ navigate }: Props) {
                 className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0 bg-white"
                 style={{ color: '#1E3A5F' }}>←</button>
         <span className="text-[13px] font-semibold" style={{ color: '#FCD34D' }}>별칭 등록 3 / 4 단계</span>
+        <div className="flex-1" />
+        <button onClick={() => navigate(aliasReturnPage)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-base"
+                style={{ backgroundColor: 'rgba(255,255,255,0.15)', color: '#CBD5E1' }}>✕</button>
       </div>
 
       {/* Progress bar */}

@@ -11,6 +11,8 @@ interface Props {
   hasAlias?: boolean
   setAliasEditReturn: (v: 'detail' | 'mypage') => void
   setPhotoIndex: (i: number) => void
+  returnTo?: Page
+  setAliasReturnPage?: (p: Page) => void
 }
 
 const HERO_IMG = '/images/dTADN.jpeg'
@@ -27,7 +29,7 @@ const photos = [
   { url: '/images/ADAIP.jpeg', label: '주차장' },
 ]
 
-export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditReturn, setPhotoIndex }: Props) {
+export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditReturn, setPhotoIndex, returnTo = 'search', setAliasReturnPage }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [showNavSheet, setShowNavSheet] = useState(false)
   const [showCallSheet, setShowCallSheet] = useState(false)
@@ -51,7 +53,7 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
         </div>
 
         {/* Back button */}
-        <button onClick={() => navigate('search')}
+        <button onClick={() => navigate(returnTo)}
                 className="absolute flex items-center justify-center rounded-xl text-white text-xl z-10"
                 style={{ left: 20, top: 72, width: 40, height: 40, backgroundColor: 'rgba(0,0,0,0.4)' }}>←</button>
 
@@ -156,7 +158,7 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
               ✏️ 별칭 편집하기
             </button>
           ) : (
-            <button onClick={() => navigate('alias-confirm')}
+            <button onClick={() => { setAliasReturnPage?.('detail'); navigate('alias-confirm') }}
                     className="w-full h-14 rounded-2xl flex items-center justify-center text-[15px] font-bold text-white"
                     style={{ backgroundColor: '#2563EB' }}>
               📍 별칭 등록하기

@@ -10,6 +10,8 @@ interface Props {
   navigate: (to: Page) => void
   setSelectedHasAlias: (v: boolean) => void
   setAliasInitOffset: (v: { x: number; y: number }) => void
+  setAliasReturnPage: (p: Page) => void
+  setDetailReturnPage: (p: Page) => void
 }
 
 function NaverMap() {
@@ -99,7 +101,7 @@ const cards = [
   },
 ]
 
-export default function SearchResults({ navigate, setSelectedHasAlias, setAliasInitOffset }: Props) {
+export default function SearchResults({ navigate, setSelectedHasAlias, setAliasInitOffset, setAliasReturnPage, setDetailReturnPage }: Props) {
   const [showMini, setShowMini] = useState(false)
   const [activeFilter, setActiveFilter] = useState(0)
   const filters = ['✓ 영업중', '저가순', '행사중', '고사양석']
@@ -255,7 +257,7 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
                            onShare={() => sharePlace({ alias: c.alias, name: c.original, address: c.address })}>
                 <button onClick={() => {
                   setSelectedHasAlias(c.hasAlias)
-                  i === 0 ? setShowMini(true) : navigate('detail')
+                  i === 0 ? setShowMini(true) : (setDetailReturnPage('search'), navigate('detail'))
                 }}
                         className="w-full flex items-start gap-3 p-3 text-left"
                         style={{ backgroundColor: i === 0 ? '#FFFFFF' : '#F8FAFC', border: i === 0 ? '1px solid #E2E8F0' : 'none' }}>
@@ -287,7 +289,7 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
 
       {/* Mini card overlay */}
       {showMini && (
-        <MiniCard onClose={() => setShowMini(false)} onDetail={() => navigate('detail')} />
+        <MiniCard onClose={() => setShowMini(false)} onDetail={() => { setDetailReturnPage('search'); navigate('detail') }} />
       )}
 
       {longPressPin && (
@@ -296,6 +298,7 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
           pinY={longPressPin.y}
           address={getLongPressAddress(longPressPin.x, longPressPin.y)}
           onConfirm={() => {
+            setAliasReturnPage('search')
             setAliasInitOffset({ x: 195 - longPressPin.x, y: 265 - longPressPin.y })
             setLongPressPin(null)
             navigate('alias-confirm')
