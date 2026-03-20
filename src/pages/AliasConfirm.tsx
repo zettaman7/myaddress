@@ -1,103 +1,123 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Page } from '../App'
 
 interface Props {
   navigate: (to: Page) => void
-  startInSelect?: boolean
-  initialOffset?: { x: number; y: number }
+  initialCenter?: { lat: number; lng: number } | null
   returnTo?: Page
 }
 
-interface ShopInfo { icon: string; name: string; address: string; category: string; dist: string; hasAlias: boolean }
+interface ShopInfo { icon: string; name: string; address: string; category: string; dist: string; hasAlias: boolean; lat: number; lng: number }
 
 const NEARBY_SHOPS: ShopInfo[] = [
-  { icon: '🖥', name: '강남 PC프라자',        address: '서울 강남구 테헤란로 152, 지하 1층', category: 'PC방',   dist: '0m',  hasAlias: false },
-  { icon: '☕', name: '스타벅스 강남테헤란점', address: '서울 강남구 테헤란로 150, 1층',      category: '카페',   dist: '15m', hasAlias: true  },
-  { icon: '🍜', name: '하카타 분코 라멘',      address: '서울 강남구 테헤란로 148, 지하 1층', category: '음식점', dist: '28m', hasAlias: false },
+  { icon: '🖥', name: '강남 PC프라자',        address: '서울 강남구 테헤란로 152, 지하 1층', category: 'PC방',   dist: '0m',  hasAlias: false, lat: 37.4985, lng: 127.0284 },
+  { icon: '☕', name: '스타벅스 강남테헤란점', address: '서울 강남구 테헤란로 150, 1층',      category: '카페',   dist: '15m', hasAlias: true,  lat: 37.4987, lng: 127.0282 },
+  { icon: '🍜', name: '하카타 분코 라멘',      address: '서울 강남구 테헤란로 148, 지하 1층', category: '음식점', dist: '28m', hasAlias: false, lat: 37.4983, lng: 127.0278 },
 ]
 
-const GPS_ADDR = { name: '서울특별시 강남구 테헤란로 152', address: '역삼동 823-1' }
+const DEFAULT_CENTER = { lat: 37.4985, lng: 127.0284 }
+const DEFAULT_ADDR = { name: '서울특별시 강남구 테헤란로 152', address: '역삼동 823-1' }
 
-// ─── Map canvas ───────────────────────────────────────────────────────────────
-function MapCanvas({ offsetX, offsetY }: { offsetX: number; offsetY: number }) {
-  return (
-    <div className="absolute inset-0 overflow-hidden" style={{ backgroundColor: '#F0EBE0' }}>
-      <div className="absolute inset-0" style={{ transform: `translate(${offsetX}px, ${offsetY}px)`, transition: 'transform 0.1s ease' }}>
-        <div className="absolute" style={{ left: 0, right: 0, top: '38%', height: 22, backgroundColor: '#E8E2D4', borderTop: '1px solid #D8D0C0', borderBottom: '1px solid #D8D0C0' }} />
-        <div className="absolute" style={{ left: 0, right: 0, top: '60%', height: 14, backgroundColor: '#E8E2D4' }} />
-        <div className="absolute" style={{ top: 0, bottom: 0, left: '42%', width: 20, backgroundColor: '#E8E2D4', borderLeft: '1px solid #D8D0C0' }} />
-        <div className="absolute" style={{ top: 0, bottom: 0, left: '66%', width: 12, backgroundColor: '#E8E2D4' }} />
-        {[
-          { l: '2%', t: '4%', w: '18%', h: '14%', c: '#E2D8C8' }, { l: '23%', t: '4%', w: '17%', h: '14%', c: '#D8D0BE' },
-          { l: '45%', t: '4%', w: '18%', h: '14%', c: '#C8DEFA', border: '2px solid #2563EB' }, { l: '68%', t: '4%', w: '12%', h: '14%', c: '#E0D8C6' },
-          { l: '83%', t: '4%', w: '14%', h: '14%', c: '#D6CEC0' }, { l: '2%', t: '22%', w: '18%', h: '14%', c: '#DDD5C5' },
-          { l: '23%', t: '22%', w: '17%', h: '14%', c: '#E4DCC8' }, { l: '45%', t: '22%', w: '18%', h: '14%', c: '#D8D0C0' },
-          { l: '2%', t: '43%', w: '18%', h: '15%', c: '#B8D4A8' }, { l: '23%', t: '43%', w: '17%', h: '15%', c: '#E0D8C6' },
-          { l: '2%', t: '63%', w: '18%', h: '33%', c: '#D8D0C2' }, { l: '23%', t: '63%', w: '17%', h: '33%', c: '#E0D8C8' },
-          { l: '45%', t: '63%', w: '18%', h: '33%', c: '#DDD5C3' },
-        ].map((b, i) => (
-          <div key={i} className="absolute" style={{ left: b.l, top: b.t, width: b.w, height: b.h, backgroundColor: b.c, border: b.border ?? '1px solid #CEC6B4' }} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// ─── Main component ────────────────────────────────────────────────────────────
-export default function AliasConfirm({ navigate, initialOffset, returnTo = 'home' }: Props) {
+export default function AliasConfirm({ navigate, initialCenter, returnTo = 'home' }: Props) {
   const [selectedShop, setSelectedShop] = useState<ShopInfo | null>(null)
+  const [hasMapMoved, setHasMapMoved] = useState(false)
+  const [mapDerivedAddress, setMapDerivedAddress] = useState<{ name: string; address: string }>(DEFAULT_ADDR)
 
-  // Map drag
-  const [mapOffsetX, setMapOffsetX] = useState(initialOffset?.x ?? 0)
-  const [mapOffsetY, setMapOffsetY] = useState(initialOffset?.y ?? 0)
-  const [mapDragging, setMapDragging] = useState(false)
-  const mapDragOrigin = useRef({ ox: 0, oy: 0, sx: 0, sy: 0 })
+  const [mapLoaded, setMapLoaded] = useState(false)
 
-  const isNudged = mapOffsetX !== 0 || mapOffsetY !== 0
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const kakaoMapRef = useRef<any>(null)
+  const markerRef = useRef<any>(null)
 
-  const mapDerivedAddress = (() => {
-    if (mapOffsetX > 40)  return { name: '강남 PC프라자 별관', address: '서울 강남구 테헤란로 154, 1층' }
-    if (mapOffsetX < -40) return { name: '테헤란 PC방', address: '서울 강남구 테헤란로 148, 2층' }
-    return { name: GPS_ADDR.name, address: GPS_ADDR.address }
-  })()
+  const center = initialCenter ?? DEFAULT_CENTER
 
-  const onMapMouseDown = (e: React.MouseEvent) => {
-    setMapDragging(true)
-    mapDragOrigin.current = { ox: mapOffsetX, oy: mapOffsetY, sx: e.clientX, sy: e.clientY }
-  }
-  const onMapMouseMove = (e: React.MouseEvent) => {
-    if (!mapDragging) return
-    const { ox, oy, sx, sy } = mapDragOrigin.current
-    setMapOffsetX(ox + e.clientX - sx); setMapOffsetY(oy + e.clientY - sy)
-    if (selectedShop) setSelectedShop(null) // 드래그 시 장소 선택 해제
-  }
-  const onMapMouseUp = () => setMapDragging(false)
-  const onMapTouchStart = (e: React.TouchEvent) => {
-    const t = e.touches[0]
-    setMapDragging(true)
-    mapDragOrigin.current = { ox: mapOffsetX, oy: mapOffsetY, sx: t.clientX, sy: t.clientY }
-  }
-  const onMapTouchMove = (e: React.TouchEvent) => {
-    if (!mapDragging) return
-    const t = e.touches[0]
-    const { ox, oy, sx, sy } = mapDragOrigin.current
-    setMapOffsetX(ox + t.clientX - sx); setMapOffsetY(oy + t.clientY - sy)
-    if (selectedShop) setSelectedShop(null)
-  }
-  const onMapTouchEnd = () => setMapDragging(false)
+  useEffect(() => {
+    if (!mapContainerRef.current) return
+    let mounted = true
+
+    const initMap = () => {
+      if (!mounted || !mapContainerRef.current) return
+      const container = mapContainerRef.current
+
+      let map: any
+      try {
+        map = new window.kakao.maps.Map(container, {
+          center: new window.kakao.maps.LatLng(center.lat, center.lng),
+          level: 3,
+        })
+      } catch { return }
+      kakaoMapRef.current = map
+      if (mounted) setMapLoaded(true)
+
+      // GPS marker at center
+      markerRef.current = new window.kakao.maps.Marker({
+        position: new window.kakao.maps.LatLng(center.lat, center.lng),
+        map,
+      })
+
+      // Dragend → reverse geocode
+      window.kakao.maps.event.addListener(map, 'dragend', () => {
+        if (!mounted) return
+        setHasMapMoved(true)
+        setSelectedShop(null)
+        const mapCenter = map.getCenter()
+        const geocoder = new window.kakao.maps.services.Geocoder()
+        geocoder.coord2Address(mapCenter.getLng(), mapCenter.getLat(), (result: any, status: any) => {
+          if (!mounted) return
+          if (status === window.kakao.maps.services.Status.OK) {
+            const addr = result[0]
+            setMapDerivedAddress({
+              name: addr.road_address?.address_name || addr.address.address_name,
+              address: addr.address.address_name,
+            })
+          }
+        })
+      })
+
+      return () => {
+        if (markerRef.current) markerRef.current.setMap(null)
+      }
+    }
+
+    let cleanup: (() => void) | undefined
+
+    const tryLoad = () => {
+      if (!mounted) return
+      if (typeof window.kakao !== 'undefined') {
+        window.kakao.maps.load(() => {
+          if (mounted) cleanup = initMap() || undefined
+        })
+      } else {
+        setTimeout(tryLoad, 100)
+      }
+    }
+    tryLoad()
+
+    return () => {
+      mounted = false
+      cleanup?.()
+    }
+  }, [])
 
   const handleSelectShop = (shop: ShopInfo | null) => {
     setSelectedShop(shop)
-    // 장소 선택 시 지도를 GPS 기준으로 초기화
-    setMapOffsetX(0); setMapOffsetY(0)
+    setHasMapMoved(false)
+    if (shop && kakaoMapRef.current) {
+      kakaoMapRef.current.setCenter(new window.kakao.maps.LatLng(shop.lat, shop.lng))
+      setMapDerivedAddress({ name: shop.name, address: shop.address })
+    } else if (!shop && kakaoMapRef.current) {
+      kakaoMapRef.current.setCenter(new window.kakao.maps.LatLng(center.lat, center.lng))
+      setMapDerivedAddress(DEFAULT_ADDR)
+    }
   }
 
-  // 현재 선택된 위치 정보
+  const isNudged = hasMapMoved && !selectedShop
+
   const activePlace = selectedShop
     ? { icon: selectedShop.icon, name: selectedShop.name, address: selectedShop.address, tag: '장소 선택됨', tagColor: '#059669', tagBg: '#D1FAE5' }
     : isNudged
       ? { icon: '📍', name: mapDerivedAddress.name, address: mapDerivedAddress.address, tag: '위치 조정됨', tagColor: '#D97706', tagBg: '#FEF3C7' }
-      : { icon: '📡', name: GPS_ADDR.name, address: GPS_ADDR.address, tag: 'GPS 감지됨', tagColor: '#2563EB', tagBg: '#DBEAFE' }
+      : { icon: '📡', name: DEFAULT_ADDR.name, address: DEFAULT_ADDR.address, tag: 'GPS 감지됨', tagColor: '#2563EB', tagBg: '#DBEAFE' }
 
   const ctaLabel = selectedShop
     ? `🏪 ${selectedShop.name} · 등록 시작 →`
@@ -129,29 +149,37 @@ export default function AliasConfirm({ navigate, initialOffset, returnTo = 'home
       </div>
 
       {/* ── 지도 (고정 높이) ── */}
-      <div
-        className="relative flex-shrink-0 overflow-hidden"
-        style={{ height: 240, cursor: mapDragging ? 'grabbing' : 'grab', userSelect: 'none' }}
-        onMouseDown={onMapMouseDown} onMouseMove={onMapMouseMove} onMouseUp={onMapMouseUp} onMouseLeave={onMapMouseUp}
-        onTouchStart={onMapTouchStart} onTouchMove={onMapTouchMove} onTouchEnd={onMapTouchEnd}
-      >
-        <MapCanvas offsetX={mapOffsetX} offsetY={mapOffsetY} />
+      <div className="relative flex-shrink-0 overflow-hidden" style={{ height: 240 }}>
+        {/* Kakao Map */}
+        <div ref={mapContainerRef} className="absolute inset-0" />
+
+        {/* Loading fallback */}
+        {!mapLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none"
+               style={{ backgroundColor: '#F0EBE0' }}>
+            <div className="flex flex-col items-center gap-2">
+              <div className="w-6 h-6 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin" />
+              <span className="text-[11px]" style={{ color: '#64748B' }}>지도 로딩중...</span>
+            </div>
+          </div>
+        )}
 
         {/* GPS badge */}
         <div className="absolute top-3 left-3 z-10 flex items-center gap-1.5 px-2.5 py-1.5 rounded-full pointer-events-none"
              style={{ backgroundColor: 'rgba(255,255,255,0.95)', boxShadow: '0 1px 6px rgba(0,0,0,0.15)' }}>
           <div className="w-2 h-2 rounded-full flex-shrink-0"
-               style={{ backgroundColor: isNudged ? '#D97706' : '#059669' }} />
-          <span className="text-[11px] font-semibold" style={{ color: isNudged ? '#D97706' : '#059669' }}>
-            {isNudged ? '위치 조정됨' : 'GPS 감지됨'}
+               style={{ backgroundColor: selectedShop ? '#059669' : isNudged ? '#D97706' : '#059669' }} />
+          <span className="text-[11px] font-semibold"
+                style={{ color: selectedShop ? '#059669' : isNudged ? '#D97706' : '#059669' }}>
+            {selectedShop ? '장소 선택됨' : isNudged ? '위치 조정됨' : 'GPS 감지됨'}
           </span>
         </div>
 
         {/* GPS reset */}
-        {isNudged && (
+        {(isNudged || selectedShop) && (
           <button className="absolute top-3 right-3 z-10 px-3 py-1.5 rounded-full text-[11px] font-semibold"
                   style={{ backgroundColor: 'rgba(255,255,255,0.95)', boxShadow: '0 1px 6px rgba(0,0,0,0.15)', color: '#0F172A' }}
-                  onClick={() => { setMapOffsetX(0); setMapOffsetY(0) }}>
+                  onClick={() => handleSelectShop(null)}>
             📡 초기화
           </button>
         )}
@@ -163,15 +191,13 @@ export default function AliasConfirm({ navigate, initialOffset, returnTo = 'home
                style={{ width: 44, height: 44, top: -9, left: -9, backgroundColor: 'rgba(37,99,235,0.15)', border: '2px solid rgba(37,99,235,0.3)' }} />
           <div className="rounded-full"
                style={{ width: 26, height: 26, backgroundColor: '#2563EB', border: '3px solid white',
-                        boxShadow: mapDragging ? '0 8px 24px rgba(37,99,235,0.55)' : '0 3px 12px rgba(37,99,235,0.45)',
-                        transform: mapDragging ? 'translateY(-6px)' : 'none', transition: 'transform 0.15s ease' }} />
+                        boxShadow: '0 3px 12px rgba(37,99,235,0.45)' }} />
           <div style={{ width: 0, height: 0, borderLeft: '7px solid transparent', borderRight: '7px solid transparent',
-                        borderTop: '11px solid #2563EB', marginTop: -1,
-                        transform: mapDragging ? 'translateY(-6px)' : 'none', transition: 'transform 0.15s ease' }} />
+                        borderTop: '11px solid #2563EB', marginTop: -1 }} />
         </div>
 
         {/* 드래그 힌트 */}
-        {!isNudged && !mapDragging && !selectedShop && (
+        {!isNudged && !selectedShop && (
           <div className="absolute z-10 pointer-events-none"
                style={{ left: '50%', top: 'calc(50% + 22px)', transform: 'translateX(-50%)' }}>
             <span className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
@@ -249,7 +275,7 @@ export default function AliasConfirm({ navigate, initialOffset, returnTo = 'home
                  style={{ backgroundColor: '#F0FDF4' }}>📡</div>
             <div className="flex-1 min-w-0">
               <p className="text-[13px] font-bold truncate" style={{ color: '#0F172A' }}>GPS 현재 위치로 등록</p>
-              <p className="text-[10px] truncate" style={{ color: '#64748B' }}>{GPS_ADDR.name}</p>
+              <p className="text-[10px] truncate" style={{ color: '#64748B' }}>{DEFAULT_ADDR.name}</p>
             </div>
             <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
                  style={{ backgroundColor: !selectedShop && !isNudged ? '#2563EB' : '#F1F5F9' }}>

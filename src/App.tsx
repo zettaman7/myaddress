@@ -26,7 +26,7 @@ export default function App() {
   const [selectedHasAlias, setSelectedHasAlias] = useState(false)
   const [aliasEditReturn, setAliasEditReturn] = useState<'detail' | 'mypage'>('mypage')
   const [photoIndex, setPhotoIndex] = useState(0)
-  const [aliasInitOffset, setAliasInitOffset] = useState({ x: 0, y: 0 })
+  const [aliasInitCenter, setAliasInitCenter] = useState<{ lat: number; lng: number } | null>(null)
   const [aliasReturnPage, setAliasReturnPage] = useState<Page>('home')
   const [detailReturnPage, setDetailReturnPage] = useState<Page>('search')
   const navigate = (to: Page) => setPage(to)
@@ -34,12 +34,12 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-500 flex items-center justify-center">
       <div className="relative w-full max-w-[390px] h-screen max-h-[844px] overflow-hidden bg-white shadow-2xl">
-        {page === 'home'            && <MainHome navigate={navigate} setAliasInitOffset={setAliasInitOffset} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
-        {page === 'search'          && <SearchResults navigate={navigate} setSelectedHasAlias={setSelectedHasAlias} setAliasInitOffset={setAliasInitOffset} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
+        {page === 'home'            && <MainHome navigate={navigate} setAliasInitCenter={setAliasInitCenter} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
+        {page === 'search'          && <SearchResults navigate={navigate} setSelectedHasAlias={setSelectedHasAlias} setAliasInitCenter={setAliasInitCenter} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
         {page === 'detail'          && <PlaceDetail navigate={navigate} hasAlias={selectedHasAlias} setAliasEditReturn={setAliasEditReturn} setPhotoIndex={setPhotoIndex} returnTo={detailReturnPage} setAliasReturnPage={setAliasReturnPage} />}
         {page === 'photo-view'      && <PhotoViewer navigate={navigate} initialIndex={photoIndex} />}
         {page === 'alias-select'    && <AliasConfirm navigate={navigate} returnTo="home" />}
-        {page === 'alias-confirm'   && <AliasConfirm navigate={navigate} initialOffset={aliasInitOffset} returnTo={aliasReturnPage} />}
+        {page === 'alias-confirm'   && <AliasConfirm navigate={navigate} initialCenter={aliasInitCenter} returnTo={aliasReturnPage} />}
         {page === 'register'        && <AliasRegister navigate={navigate} aliasReturnPage={aliasReturnPage} />}
         {page === 'alias-detail'    && <AliasDetail navigate={navigate} aliasReturnPage={aliasReturnPage} />}
         {page === 'alias-final'     && <AliasFinal navigate={navigate} aliasReturnPage={aliasReturnPage} />}

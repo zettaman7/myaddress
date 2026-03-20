@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Page } from '../App'
 import TabBar from '../components/TabBar'
 import MiniCard from '../components/MiniCard'
@@ -9,66 +9,17 @@ import LongPressAliasSheet from '../components/LongPressAliasSheet'
 interface Props {
   navigate: (to: Page) => void
   setSelectedHasAlias: (v: boolean) => void
-  setAliasInitOffset: (v: { x: number; y: number }) => void
+  setAliasInitCenter: (v: { lat: number; lng: number }) => void
   setAliasReturnPage: (p: Page) => void
   setDetailReturnPage: (p: Page) => void
 }
 
-function NaverMap() {
-  return (
-    <div className="absolute inset-0" style={{ backgroundColor: '#F0EBE0' }}>
-      <div className="absolute" style={{ left: 0, right: 0, top: '35%', height: 20, backgroundColor: '#E8E2D4', borderTop: '1px solid #D8D0C0', borderBottom: '1px solid #D8D0C0' }} />
-      <div className="absolute" style={{ left: 0, right: 0, top: '57%', height: 12, backgroundColor: '#E8E2D4' }} />
-      <div className="absolute" style={{ top: 0, bottom: 0, left: '40%', width: 18, backgroundColor: '#E8E2D4' }} />
-      <div className="absolute" style={{ top: 0, bottom: 0, left: '64%', width: 10, backgroundColor: '#E8E2D4' }} />
-      <div className="absolute" style={{ left: 0, right: 0, top: '18%', height: 7, backgroundColor: '#EAE4D8' }} />
-      <div className="absolute" style={{ top: 0, bottom: 0, left: '20%', width: 7, backgroundColor: '#EAE4D8' }} />
-      <div className="absolute" style={{ top: 0, bottom: 0, left: '78%', width: 7, backgroundColor: '#EAE4D8' }} />
-      {[
-        { l: '2%',  t: '2%',  w: '16%', h: '14%', c: '#E2D8C8' },
-        { l: '22%', t: '2%',  w: '16%', h: '14%', c: '#D8D0BE' },
-        { l: '43%', t: '2%',  w: '18%', h: '14%', c: '#DDD5C3' },
-        { l: '66%', t: '2%',  w: '11%', h: '14%', c: '#E0D8C6' },
-        { l: '80%', t: '2%',  w: '17%', h: '14%', c: '#D6CEC0' },
-        { l: '2%',  t: '20%', w: '16%', h: '13%', c: '#DDD5C5' },
-        { l: '22%', t: '20%', w: '16%', h: '13%', c: '#E4DCC8' },
-        { l: '43%', t: '20%', w: '18%', h: '13%', c: '#D8D0C0' },
-        { l: '66%', t: '20%', w: '11%', h: '13%', c: '#DDD5C3' },
-        { l: '80%', t: '20%', w: '17%', h: '13%', c: '#D4CCC0' },
-        { l: '2%',  t: '37%', w: '16%', h: '18%', c: '#B8D4A8' },
-        { l: '22%', t: '37%', w: '16%', h: '18%', c: '#E0D8C6' },
-        { l: '43%', t: '37%', w: '18%', h: '18%', c: '#DACED0' },
-        { l: '66%', t: '37%', w: '11%', h: '18%', c: '#BCDAAC' },
-        { l: '80%', t: '37%', w: '17%', h: '18%', c: '#D8D0C0' },
-        { l: '2%',  t: '59%', w: '16%', h: '25%', c: '#D8D0C2' },
-        { l: '22%', t: '59%', w: '16%', h: '25%', c: '#E0D8C8' },
-        { l: '43%', t: '59%', w: '18%', h: '25%', c: '#DDD5C3' },
-        { l: '66%', t: '59%', w: '11%', h: '25%', c: '#D4CCC0' },
-        { l: '80%', t: '59%', w: '17%', h: '25%', c: '#DACED2' },
-      ].map((b, i) => (
-        <div key={i} className="absolute" style={{ left: b.l, top: b.t, width: b.w, height: b.h, backgroundColor: b.c, border: '1px solid #CEC6B4' }} />
-      ))}
-    </div>
-  )
-}
-
-function LocationPin({ x, y, size = 20, opacity = 1 }: { x: number; y: number; size?: number; opacity?: number }) {
-  return (
-    <div className="absolute flex flex-col items-center" style={{ left: x, top: y, opacity, zIndex: 5 }}>
-      <div className="rounded-full" style={{ width: size, height: size, backgroundColor: '#E8563A', border: '2px solid white', boxShadow: '0 2px 6px rgba(232,86,58,0.5)' }} />
-      <div style={{ width: 0, height: 0, borderLeft: `${size * 0.22}px solid transparent`, borderRight: `${size * 0.22}px solid transparent`, borderTop: `${size * 0.38}px solid #E8563A`, marginTop: -1 }} />
-    </div>
-  )
-}
-
-function PinLabel({ x, y, text }: { x: number; y: number; text: string }) {
-  return (
-    <div className="absolute z-10 px-1.5 py-0.5 bg-white rounded shadow-sm text-[9px] font-bold text-slate-900 whitespace-nowrap"
-         style={{ left: x, top: y, boxShadow: '0 1px 4px rgba(0,0,0,0.18)' }}>
-      {text}
-    </div>
-  )
-}
+const RESULT_PINS = [
+  { lat: 37.5382, lng: 127.1243, alias: '강동구 가성비 PC방' },
+  { lat: 37.5320, lng: 127.1350, alias: '암사역 저렴한 PC방' },
+  { lat: 37.5400, lng: 127.1100, alias: '' },
+  { lat: 37.5450, lng: 127.1300, alias: '' },
+]
 
 const cards = [
   {
@@ -89,7 +40,7 @@ const cards = [
     icon: '💻',
     iconBg: '#F1F5F9',
     alias: '암사역 저렴한 PC방',
-    original: '마포 PC파크',
+    original: '암사역 게임존',
     address: '서울 강동구 암사동 123',
     meta: '⭐ 4.5  ·  🟢 영업중  ·  📍 1.2km  ·  ₩1,200/hr',
     tags: '#24시간  #RTX석',
@@ -101,100 +52,151 @@ const cards = [
   },
 ]
 
-export default function SearchResults({ navigate, setSelectedHasAlias, setAliasInitOffset, setAliasReturnPage, setDetailReturnPage }: Props) {
+export default function SearchResults({ navigate, setSelectedHasAlias, setAliasInitCenter, setAliasReturnPage, setDetailReturnPage }: Props) {
   const [showMini, setShowMini] = useState(false)
   const [activeFilter, setActiveFilter] = useState(0)
   const filters = ['✓ 영업중', '저가순', '행사중', '고사양석']
 
-  const [mapX, setMapX] = useState(0)
-  const [mapY, setMapY] = useState(0)
-  const [mapDragging, setMapDragging] = useState(false)
-  const dragRef = useRef({ ox: 0, oy: 0, sx: 0, sy: 0 })
+  const [mapLoaded, setMapLoaded] = useState(false)
+  const [mapError, setMapError] = useState<string | null>(null)
 
-  // Long-press state
-  const [longPressPin, setLongPressPin] = useState<{ x: number; y: number } | null>(null)
-  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const longPressMoved = useRef(false)
+  const [longPressPin, setLongPressPin] = useState<{
+    x: number; y: number; lat: number; lng: number; address: string
+  } | null>(null)
+
   const mapContainerRef = useRef<HTMLDivElement>(null)
+  const kakaoMapRef = useRef<any>(null)
+  const markersRef = useRef<any[]>([])
+  const overlaysRef = useRef<any[]>([])
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const touchStart = useRef({ x: 0, y: 0, moved: false })
 
-  const getLongPressAddress = (x: number, y: number) => {
-    const addresses = [
-      '서울 강동구 천호대로 211', '서울 강동구 명일로 55', '서울 강동구 올림픽로 456',
-      '서울 강동구 성내동 78', '서울 강동구 고덕로 22',
-    ]
-    return addresses[Math.abs(Math.floor(x / 80 + y / 100)) % addresses.length]
-  }
+  useEffect(() => {
+    if (!mapContainerRef.current) return
+    let mounted = true
 
-  const startLongPress = (clientX: number, clientY: number) => {
-    longPressMoved.current = false
-    longPressTimer.current = setTimeout(() => {
-      if (longPressMoved.current) return
-      const rect = mapContainerRef.current?.getBoundingClientRect()
-      if (!rect) return
-      setLongPressPin({ x: clientX - rect.left, y: clientY - rect.top })
-      setMapDragging(false)
-    }, 500)
-  }
+    const initMap = () => {
+      if (!mounted || !mapContainerRef.current) return
+      const container = mapContainerRef.current
 
-  const cancelLongPress = (clientX: number, clientY: number) => {
-    const { sx, sy } = dragRef.current
-    if (Math.abs(clientX - sx) > 8 || Math.abs(clientY - sy) > 8) {
-      longPressMoved.current = true
-      if (longPressTimer.current) clearTimeout(longPressTimer.current)
+      let map: any
+      try {
+        map = new window.kakao.maps.Map(container, {
+          center: new window.kakao.maps.LatLng(37.5382, 127.1243),
+          level: 5,
+        })
+      } catch (e) {
+        if (mounted) setMapError('지도 로드 실패')
+        return
+      }
+      kakaoMapRef.current = map
+      if (mounted) setMapLoaded(true)
+
+      RESULT_PINS.forEach(pin => {
+        const position = new window.kakao.maps.LatLng(pin.lat, pin.lng)
+        const marker = new window.kakao.maps.Marker({ position, map })
+        markersRef.current.push(marker)
+
+        if (pin.alias) {
+          const content = `<div style="background:white;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;color:#0F172A;box-shadow:0 1px 4px rgba(0,0,0,0.18);white-space:nowrap;pointer-events:none">${pin.alias} [${Math.floor(Math.random() * 30 + 70)}]</div>`
+          const overlay = new window.kakao.maps.CustomOverlay({
+            content,
+            position,
+            yAnchor: 3.2,
+            map,
+          })
+          overlaysRef.current.push(overlay)
+        }
+      })
+
+      // Long press via DOM events
+      const onTouchStart = (e: TouchEvent) => {
+        const t = e.touches[0]
+        touchStart.current = { x: t.clientX, y: t.clientY, moved: false }
+        longPressTimer.current = setTimeout(() => {
+          if (touchStart.current.moved || !mounted) return
+          const rect = container.getBoundingClientRect()
+          const px = touchStart.current.x - rect.left
+          const py = touchStart.current.y - rect.top
+          let latlng: any
+          try {
+            latlng = map.getProjection().fromContainerPixelToLatLng(
+              new window.kakao.maps.Point(px, py)
+            )
+          } catch {
+            latlng = map.getCenter()
+          }
+          const geocoder = new window.kakao.maps.services.Geocoder()
+          geocoder.coord2Address(latlng.getLng(), latlng.getLat(), (result: any, status: any) => {
+            if (!mounted) return
+            const address = status === window.kakao.maps.services.Status.OK
+              ? result[0].road_address?.address_name || result[0].address.address_name
+              : `${latlng.getLat().toFixed(5)}, ${latlng.getLng().toFixed(5)}`
+            setLongPressPin({ x: px, y: py, lat: latlng.getLat(), lng: latlng.getLng(), address })
+          })
+        }, 600)
+      }
+      const onTouchMove = (e: TouchEvent) => {
+        const t = e.touches[0]
+        if (Math.abs(t.clientX - touchStart.current.x) > 8 || Math.abs(t.clientY - touchStart.current.y) > 8) {
+          touchStart.current.moved = true
+          if (longPressTimer.current) clearTimeout(longPressTimer.current)
+        }
+      }
+      const onTouchEnd = () => {
+        if (longPressTimer.current) clearTimeout(longPressTimer.current)
+      }
+
+      container.addEventListener('touchstart', onTouchStart, { passive: true })
+      container.addEventListener('touchmove', onTouchMove, { passive: true })
+      container.addEventListener('touchend', onTouchEnd, { passive: true })
+
+      return () => {
+        container.removeEventListener('touchstart', onTouchStart)
+        container.removeEventListener('touchmove', onTouchMove)
+        container.removeEventListener('touchend', onTouchEnd)
+        markersRef.current.forEach(m => m.setMap(null))
+        overlaysRef.current.forEach(o => o.setMap(null))
+        markersRef.current = []
+        overlaysRef.current = []
+      }
     }
-  }
 
-  const onMouseDown = (e: React.MouseEvent) => {
-    setMapDragging(true); dragRef.current = { ox: mapX, oy: mapY, sx: e.clientX, sy: e.clientY }
-    startLongPress(e.clientX, e.clientY)
-  }
-  const onMouseMove = (e: React.MouseEvent) => {
-    cancelLongPress(e.clientX, e.clientY)
-    if (!mapDragging) return
-    const { ox, oy, sx, sy } = dragRef.current; setMapX(ox + e.clientX - sx); setMapY(oy + e.clientY - sy)
-  }
-  const onMouseUp = () => {
-    setMapDragging(false)
-    if (longPressTimer.current) clearTimeout(longPressTimer.current)
-  }
-  const onTouchStart = (e: React.TouchEvent) => {
-    e.preventDefault()
-    const t = e.touches[0]; setMapDragging(true); dragRef.current = { ox: mapX, oy: mapY, sx: t.clientX, sy: t.clientY }
-    startLongPress(t.clientX, t.clientY)
-  }
-  const onTouchMove = (e: React.TouchEvent) => {
-    const t = e.touches[0]
-    cancelLongPress(t.clientX, t.clientY)
-    if (!mapDragging) return
-    const { ox, oy, sx, sy } = dragRef.current; setMapX(ox + t.clientX - sx); setMapY(oy + t.clientY - sy)
-  }
-  const onTouchEnd = () => {
-    setMapDragging(false)
-    if (longPressTimer.current) clearTimeout(longPressTimer.current)
-  }
+    let cleanup: (() => void) | undefined
+
+    const tryLoad = () => {
+      if (!mounted) return
+      if (typeof window.kakao !== 'undefined') {
+        window.kakao.maps.load(() => {
+          if (mounted) cleanup = initMap() || undefined
+        })
+      } else {
+        setTimeout(tryLoad, 100)
+      }
+    }
+    tryLoad()
+
+    return () => {
+      mounted = false
+      cleanup?.()
+    }
+  }, [])
 
   return (
     <div className="relative w-full h-full overflow-hidden flex flex-col">
-      {/* Full-screen map — draggable */}
-      <div
-        ref={mapContainerRef}
-        className="absolute inset-0 z-0"
-        style={{ cursor: mapDragging ? 'grabbing' : 'grab', userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none', touchAction: 'none' } as React.CSSProperties}
-        onContextMenu={e => e.preventDefault()}
-        onMouseDown={onMouseDown} onMouseMove={onMouseMove} onMouseUp={onMouseUp} onMouseLeave={onMouseUp}
-        onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}
-      >
-        {/* Moving layer: map + pins */}
-        <div className="absolute inset-0" style={{ transform: `translate(${mapX}px, ${mapY}px)`, transition: mapDragging ? 'none' : 'transform 0.1s ease' }}>
-          <NaverMap />
-          <LocationPin x={130} y={220} size={20} />
-          <PinLabel x={62} y={208} text="강동구 가성비 PC방 [91]" />
-          <LocationPin x={246} y={310} size={14} opacity={0.8} />
-          <PinLabel x={178} y={296} text="암사역 저렴한 PC방 [84]" />
-          <LocationPin x={83}  y={380} size={12} opacity={0.5} />
-          <LocationPin x={307} y={230} size={12} opacity={0.5} />
+      {/* Full-screen map */}
+      <div ref={mapContainerRef} className="absolute inset-0 z-0" />
+
+      {/* Map loading/error fallback */}
+      {!mapLoaded && !mapError && (
+        <div className="absolute inset-0 z-5 flex items-center justify-center pointer-events-none"
+             style={{ backgroundColor: '#F0EBE0' }}>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-8 h-8 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin" />
+            <span className="text-[12px] text-white font-semibold" style={{ textShadow: '0 1px 4px rgba(0,0,0,0.5)' }}>지도 불러오는 중...</span>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Nav header */}
       <div className="relative z-20 flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>
@@ -229,7 +231,7 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
       <div className="relative z-20 flex gap-2 px-5 py-2.5 overflow-x-auto flex-shrink-0" style={{ scrollbarWidth: 'none' }}>
         {filters.map((f, i) => (
           <button key={i} onClick={() => setActiveFilter(i)}
-                  className="flex-shrink-0 px-3 h-[34px] rounded-full text-[11px] font-semibold transition-colors"
+                  className="flex-shrink-0 px-3 h-[34px] rounded-full text-[11px] font-semibold"
                   style={{ backgroundColor: activeFilter === i ? '#2563EB' : '#FFFFFF', color: activeFilter === i ? '#FFFFFF' : '#374151', boxShadow: '0 1px 4px rgba(0,0,0,0.12)' }}>
             {f}
           </button>
@@ -296,10 +298,10 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
         <LongPressAliasSheet
           pinX={longPressPin.x}
           pinY={longPressPin.y}
-          address={getLongPressAddress(longPressPin.x, longPressPin.y)}
+          address={longPressPin.address}
           onConfirm={() => {
             setAliasReturnPage('search')
-            setAliasInitOffset({ x: 195 - longPressPin.x, y: 265 - longPressPin.y })
+            setAliasInitCenter({ lat: longPressPin.lat, lng: longPressPin.lng })
             setLongPressPin(null)
             navigate('alias-confirm')
           }}
