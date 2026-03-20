@@ -1,6 +1,5 @@
 import { Page } from '../App'
 import TabBar from '../components/TabBar'
-import SwipeReveal from '../components/SwipeReveal'
 import { sharePlace } from '../utils/share'
 
 interface Props {
@@ -107,9 +106,7 @@ export default function MyPage({ navigate, setAliasEditReturn }: Props) {
           </div>
 
           {aliases.map((a, i) => (
-            <SwipeReveal key={i}
-                         onShare={() => sharePlace({ alias: a.alias, name: a.placeName, address: a.address })}>
-            <div
+            <div key={i}
               className="flex flex-col gap-2 p-3.5 rounded-[16px] border"
               style={{ backgroundColor: a.cardBg, borderColor: a.cardBorder }}
             >
@@ -127,7 +124,10 @@ export default function MyPage({ navigate, setAliasEditReturn }: Props) {
                   {a.actions.map((act, j) => (
                     <button
                       key={j}
-                      onClick={() => { if (act.isEdit) { setAliasEditReturn('mypage'); navigate('alias-edit') } }}
+                      onClick={() => {
+                        if (act.isEdit) { setAliasEditReturn('mypage'); navigate('alias-edit') }
+                        else sharePlace({ alias: a.alias, name: a.placeName, address: a.address })
+                      }}
                       className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
                       style={{ backgroundColor: act.bg, color: act.text }}
                     >
@@ -148,7 +148,6 @@ export default function MyPage({ navigate, setAliasEditReturn }: Props) {
                 ))}
               </div>
             </div>
-            </SwipeReveal>
           ))}
         </div>
 
