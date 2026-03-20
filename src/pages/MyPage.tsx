@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Page } from '../App'
 import TabBar from '../components/TabBar'
 import { sharePlace } from '../utils/share'
+import AliasRenewSheet from '../components/AliasRenewSheet'
+import QRCodeSheet from '../components/QRCodeSheet'
 
 interface Props {
   navigate: (to: Page) => void
@@ -37,9 +39,10 @@ const aliases = [
       { label: '신규등록', bg: '#D1FAE5', text: '#059669' },
       { label: '영구', bg: '#EFF6FF', text: '#2563EB' },
     ],
+    expiry: null,
     actions: [
-      { label: '편집', bg: '#F1F5F9', text: '#475569', isEdit: true },
-      { label: '공유', bg: '#EFF6FF', text: '#2563EB', isEdit: false },
+      { label: '편집', bg: '#F1F5F9', text: '#475569', isEdit: true, isRenew: false },
+      { label: '공유', bg: '#EFF6FF', text: '#2563EB', isEdit: false, isRenew: false },
     ],
     cardBg: '#FFFFFF',
     cardBorder: '#F1F5F9',
@@ -55,12 +58,13 @@ const aliases = [
     alias: 'xmas_party2025',
     placeName: '파티룸홍대',
     address: '서울 마포구 와우산로 17, 2층',
+    expiry: '2026.03.23',
     badges: [
       { label: 'D-2 만료', bg: '#FEF3C7', text: '#D97706' },
     ],
     actions: [
-      { label: '연장', bg: '#FEF3C7', text: '#D97706' },
-      { label: '공유', bg: '#EFF6FF', text: '#2563EB' },
+      { label: '연장', bg: '#FEF3C7', text: '#D97706', isEdit: false, isRenew: true },
+      { label: '공유', bg: '#EFF6FF', text: '#2563EB', isEdit: false, isRenew: false },
     ],
     cardBg: '#FFFBEB',
     cardBorder: '#FEF3C7',
@@ -90,10 +94,15 @@ const stats = [
   { value: '247',                     label: '공유 횟수', sub: '지난 1달 누적',                         valueColor: '#0F172A', subColor: '#94A3B8' },
 ]
 
+interface RenewTarget { aliasName: string; placeName: string; expiry: string }
+interface QRTarget    { aliasName: string; placeName: string; address: string }
+
 export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPage, setEventAliasName }: Props) {
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const [endedDeletingId, setEndedDeletingId] = useState<number | null>(null)
   const [showEndedEvents, setShowEndedEvents] = useState(false)
+  const [renewTarget, setRenewTarget] = useState<RenewTarget | null>(null)
+  const [qrTarget, setQRTarget]       = useState<QRTarget | null>(null)
 
   const goToEvent = (aliasFullName: string) => {
     setEventReturnPage?.('mypage')
@@ -194,7 +203,8 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
                     {a.actions.map((act, j) => (
                       <button key={j}
                               onClick={() => {
-                                if (act.isEdit) { setAliasEditReturn('mypage'); navigate('alias-edit') }
+                                if (act.isEdit)  { setAliasEditReturn('mypage'); navigate('alias-edit') }
+                                else if (act.isRenew) setRenewTarget({ aliasName: a.alias, placeName: a.placeName, expiry: a.expiry ?? '' })
                                 else sharePlace({ alias: a.alias, name: a.placeName, address: a.address })
                               }}
                               className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
@@ -202,6 +212,12 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
                         {act.label}
                       </button>
                     ))}
+                    {/* QR코드 버튼 */}
+                    <button onClick={() => setQRTarget({ aliasName: a.alias, placeName: a.placeName, address: a.address })}
+                            className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
+                            style={{ backgroundColor: '#F1F5F9', color: '#475569' }}>
+                      QR
+                    </button>
                   </div>
                 </div>
 
@@ -449,6 +465,26 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
 
       {/* Tab bar */}
       <TabBar activePage="mypage" navigate={navigate} />
+
+      {/* 별칭 연장 시트 */}
+      {renewTarget && (
+        <AliasRenewSheet
+          aliasName={renewTarget.aliasName}
+          placeName={renewTarget.placeName}
+          currentExpiry={renewTarget.expiry}
+          onClose={() => setRenewTarget(null)}
+        />
+      )}
+
+      {/* QR코드 시트 */}
+      {qrTarget && (
+        <QRCodeSheet
+          aliasName={qrTarget.aliasName}
+          placeName={qrTarget.placeName}
+          address={qrTarget.address}
+          onClose={() => setQRTarget(null)}
+        />
+      )}
     </div>
   )
 }
