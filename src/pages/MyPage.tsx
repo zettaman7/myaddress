@@ -9,11 +9,21 @@ interface Props {
   setEventAliasName?: (name: string) => void
 }
 
-const stats = [
-  { value: '3', label: '영구 별칭', sub: '무료 3개 사용중', valueColor: '#2563EB', subColor: '#94A3B8' },
-  { value: '1', label: '임시 별칭', sub: 'D-2 만료 예정', valueColor: '#D97706', subColor: '#D97706' },
-  { value: '247', label: '총 공유 횟수', sub: '이번 달 +38', valueColor: '#059669', subColor: '#059669' },
-]
+interface AliasEvent {
+  id: number
+  type: '할인행사' | '무료증정' | '포인트적립' | '기타'
+  name: string
+  startDate: string
+  endDate: string
+  dday: number
+}
+
+const EVENT_TYPE_STYLE: Record<string, { bg: string; text: string }> = {
+  '할인행사':   { bg: '#FEF3C7', text: '#D97706' },
+  '무료증정':   { bg: '#D1FAE5', text: '#059669' },
+  '포인트적립': { bg: '#EFF6FF', text: '#2563EB' },
+  '기타':       { bg: '#F1F5F9', text: '#64748B' },
+}
 
 const aliases = [
   {
@@ -31,9 +41,13 @@ const aliases = [
     ],
     cardBg: '#FFFFFF',
     cardBorder: '#F1F5F9',
+    events: [
+      { id: 1, type: '무료증정' as const,   name: '무료 음료 1잔 증정',          startDate: '03.20', endDate: '03.31', dday: 6  },
+      { id: 2, type: '할인행사' as const,   name: '월드컵 응원 특별 할인 행사',   startDate: '03.25', endDate: '04.05', dday: 11 },
+    ] as AliasEvent[],
   },
   {
-    name: '@xmas_party2025  ·  파티룸홍대@party_hd',
+    name: '@xmas_party2025  ·  파티룸홍대',
     alias: 'xmas_party2025',
     placeName: '파티룸홍대',
     address: '서울 마포구 와우산로 17, 2층',
@@ -46,10 +60,30 @@ const aliases = [
     ],
     cardBg: '#FFFBEB',
     cardBorder: '#FEF3C7',
+    events: [] as AliasEvent[],
   },
 ]
 
+// 전체 진행중 행사 플랫 리스트 (별칭 정보 포함)
+const allEvents = aliases.flatMap(a =>
+  a.events.map(ev => ({ ...ev, aliasName: a.alias, placeName: a.placeName, aliasFullName: a.name }))
+).sort((a, b) => a.dday - b.dday)
+
+const totalActiveEvents = allEvents.length
+
+const stats = [
+  { value: '3',                       label: '영구 별칭',   sub: '무료 3개 사용중',  valueColor: '#2563EB', subColor: '#94A3B8' },
+  { value: '1',                       label: '임시 별칭',   sub: 'D-2 만료 예정',  valueColor: '#D97706', subColor: '#D97706' },
+  { value: String(totalActiveEvents), label: '진행중 행사', sub: `D-${allEvents[0]?.dday ?? '-'} 최근 종료`, valueColor: '#D97706', subColor: '#D97706' },
+]
+
 export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPage, setEventAliasName }: Props) {
+  const goToEvent = (aliasFullName: string) => {
+    setEventReturnPage?.('mypage')
+    setEventAliasName?.(aliasFullName)
+    navigate('event')
+  }
+
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#F8FAFC' }}>
 
@@ -67,6 +101,7 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
 
       {/* Scroll content */}
       <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3" style={{ scrollbarWidth: 'none' }}>
+
         {/* Profile card */}
         <div className="flex flex-col gap-2.5 px-4 py-5 rounded-[20px] bg-white">
           <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ backgroundColor: '#2563EB' }}>
@@ -76,10 +111,8 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
             <span className="text-[17px] font-bold text-slate-900">홍길동</span>
             <span className="text-xs text-slate-400">hong@myaddress.kr</span>
           </div>
-          <span
-            className="inline-flex self-start px-2.5 py-1 rounded-[10px] text-[11px] font-semibold"
-            style={{ backgroundColor: '#D1FAE5', color: '#059669' }}
-          >
+          <span className="inline-flex self-start px-2.5 py-1 rounded-[10px] text-[11px] font-semibold"
+                style={{ backgroundColor: '#D1FAE5', color: '#059669' }}>
             B2C 일반회원
           </span>
         </div>
@@ -95,73 +128,171 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
           ))}
         </div>
 
-        {/* Aliases section */}
+        {/* ── 등록된 별칭주소 ── */}
         <div className="flex flex-col gap-2.5">
           <div className="flex items-center justify-between">
             <span className="text-[15px] font-bold text-slate-900">등록된 별칭주소</span>
-            <button className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold" style={{ backgroundColor: '#F1F5F9', color: '#64748B' }}>
+            <button className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
+                    style={{ backgroundColor: '#F1F5F9', color: '#64748B' }}>
               전체 보기
             </button>
           </div>
 
-          {aliases.map((a, i) => (
-            <div key={i}
-              className="flex flex-col gap-2 p-3.5 rounded-[16px] border"
-              style={{ backgroundColor: a.cardBg, borderColor: a.cardBorder }}
-            >
-              <div className="flex items-start gap-2">
-                <div className="flex-1 flex flex-col gap-1 min-w-0">
-                  <button
-                    onClick={() => navigate('detail')}
-                    className="text-[13px] font-bold text-slate-900 text-left truncate hover:text-primary transition-colors"
-                  >
-                    {a.name}
-                  </button>
-                  <span className="text-[11px] text-slate-400 truncate">{a.address}</span>
-                </div>
-                <div className="flex flex-col gap-1.5 flex-shrink-0">
-                  {a.actions.map((act, j) => (
-                    <button
-                      key={j}
-                      onClick={() => {
-                        if (act.isEdit) { setAliasEditReturn('mypage'); navigate('alias-edit') }
-                        else sharePlace({ alias: a.alias, name: a.placeName, address: a.address })
-                      }}
-                      className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
-                      style={{ backgroundColor: act.bg, color: act.text }}
-                    >
-                      {act.label}
+          {aliases.map((a, i) => {
+            const eventCount = a.events.length
+            // 가장 임박한 행사 (dday 오름차순 첫 번째)
+            const primaryEvent = eventCount > 0
+              ? [...a.events].sort((x, y) => x.dday - y.dday)[0]
+              : null
+            const extraCount = eventCount - 1
+
+            // 버튼 레이블 & 스타일
+            const eventBtn =
+              eventCount === 0 ? { label: '🎉 행사 등록', bg: '#FEF3C7', text: '#D97706' } :
+              eventCount === 1 ? { label: '✏️ 행사 수정', bg: '#F1F5F9', text: '#475569' } :
+                                 { label: '📋 행사 관리', bg: '#F1F5F9', text: '#475569' }
+
+            return (
+              <div key={i}
+                   className="flex flex-col gap-2 p-3.5 rounded-[16px] border"
+                   style={{ backgroundColor: a.cardBg, borderColor: a.cardBorder }}>
+
+                {/* 상단: 별칭명 + 액션 버튼 */}
+                <div className="flex items-start gap-2">
+                  <div className="flex-1 flex flex-col gap-1 min-w-0">
+                    <button onClick={() => navigate('detail')}
+                            className="text-[13px] font-bold text-slate-900 text-left truncate">
+                      {a.name}
                     </button>
-                  ))}
+                    <span className="text-[11px] text-slate-400 truncate">{a.address}</span>
+                  </div>
+                  <div className="flex flex-col gap-1.5 flex-shrink-0">
+                    {a.actions.map((act, j) => (
+                      <button key={j}
+                              onClick={() => {
+                                if (act.isEdit) { setAliasEditReturn('mypage'); navigate('alias-edit') }
+                                else sharePlace({ alias: a.alias, name: a.placeName, address: a.address })
+                              }}
+                              className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
+                              style={{ backgroundColor: act.bg, color: act.text }}>
+                        {act.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex gap-1.5 flex-wrap">
-                  {a.badges.map((b, j) => (
-                    <span
-                      key={j}
-                      className="px-2 py-0.5 rounded-md text-[10px] font-semibold"
-                      style={{ backgroundColor: b.bg, color: b.text }}
-                    >
-                      {b.label}
+
+                {/* 행사 요약 패널 (행사 있을 때만) */}
+                {primaryEvent && (
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl"
+                       style={{ backgroundColor: '#FFFBEB', border: '1px solid #FDE68A' }}>
+                    <span className="flex-shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold"
+                          style={{ backgroundColor: EVENT_TYPE_STYLE[primaryEvent.type].bg, color: EVENT_TYPE_STYLE[primaryEvent.type].text }}>
+                      {primaryEvent.type}
                     </span>
-                  ))}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-bold truncate" style={{ color: '#92400E' }}>{primaryEvent.name}</p>
+                      <p className="text-[10px]" style={{ color: '#B45309' }}>
+                        📅 {primaryEvent.startDate} ~ {primaryEvent.endDate}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                      {extraCount > 0 && (
+                        <span className="text-[10px] font-semibold" style={{ color: '#D97706' }}>+{extraCount}개 더</span>
+                      )}
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+                            style={{ backgroundColor: '#D97706', color: '#FFFFFF' }}>
+                        D-{primaryEvent.dday}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* 하단: 뱃지 + 행사 버튼 */}
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-1.5 flex-wrap">
+                    {a.badges.map((b, j) => (
+                      <span key={j}
+                            className="px-2 py-0.5 rounded-md text-[10px] font-semibold"
+                            style={{ backgroundColor: b.bg, color: b.text }}>
+                        {b.label}
+                      </span>
+                    ))}
+                  </div>
+                  <button onClick={() => goToEvent(a.name)}
+                          className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex-shrink-0"
+                          style={{ backgroundColor: eventBtn.bg, color: eventBtn.text }}>
+                    {eventBtn.label}
+                  </button>
                 </div>
-                <button
-                  onClick={() => {
-                    setEventReturnPage?.('mypage')
-                    setEventAliasName?.(a.name)
-                    navigate('event')
-                  }}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex-shrink-0"
-                  style={{ backgroundColor: '#FEF3C7', color: '#D97706' }}
-                >
-                  🎉 행사 등록
-                </button>
+
+              </div>
+            )
+          })}
+        </div>
+
+        {/* ── 행사 현황 ── */}
+        {allEvents.length > 0 && (
+          <div className="flex flex-col gap-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-[15px] font-bold text-slate-900">행사 현황</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+                      style={{ backgroundColor: '#D97706' }}>
+                  {allEvents.length}개 진행중
+                </span>
               </div>
             </div>
-          ))}
-        </div>
+
+            <div className="flex flex-col gap-2">
+              {allEvents.map((ev, i) => {
+                const typeStyle = EVENT_TYPE_STYLE[ev.type]
+                return (
+                  <div key={i}
+                       className="flex flex-col gap-2.5 p-3.5 rounded-[16px] bg-white"
+                       style={{ border: '1px solid #FDE68A' }}>
+
+                    {/* 행사 유형 + 이름 */}
+                    <div className="flex items-start gap-2">
+                      <span className="flex-shrink-0 mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold"
+                            style={{ backgroundColor: typeStyle.bg, color: typeStyle.text }}>
+                        {ev.type}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-bold leading-tight" style={{ color: '#0F172A' }}>{ev.name}</p>
+                        <p className="text-[11px] mt-0.5 truncate" style={{ color: '#94A3B8' }}>
+                          @{ev.aliasName}  ·  {ev.placeName}
+                        </p>
+                      </div>
+                      <span className="flex-shrink-0 px-2 py-1 rounded-lg text-[11px] font-bold text-white"
+                            style={{ backgroundColor: ev.dday <= 3 ? '#EF4444' : '#D97706' }}>
+                        D-{ev.dday}
+                      </span>
+                    </div>
+
+                    {/* 기간 + 버튼 */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 text-[11px]" style={{ color: '#64748B' }}>
+                        <span>📅</span>
+                        <span>{ev.startDate} ~ {ev.endDate}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
+                                style={{ backgroundColor: '#F1F5F9', color: '#475569' }}>
+                          수정
+                        </button>
+                        <button className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
+                                style={{ backgroundColor: '#FEE2E2', color: '#EF4444' }}>
+                          삭제
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Upgrade banner */}
         <div className="flex items-center gap-3.5 px-[18px] py-4 rounded-[18px]" style={{ backgroundColor: '#1E3A5F' }}>
@@ -169,10 +300,12 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
             <span className="text-sm font-bold text-white">별칭 슬롯을 더 추가하고 싶으신가요?</span>
             <span className="text-xs" style={{ color: '#93C5FD' }}>구독 플랜으로 무제한 별칭 이용</span>
           </div>
-          <button className="flex-shrink-0 px-3.5 py-2.5 rounded-xl bg-white text-xs font-bold" style={{ color: '#1E3A5F' }}>
+          <button className="flex-shrink-0 px-3.5 py-2.5 rounded-xl bg-white text-xs font-bold"
+                  style={{ color: '#1E3A5F' }}>
             업그레이드
           </button>
         </div>
+
       </div>
 
       {/* Tab bar */}
