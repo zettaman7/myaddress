@@ -94,6 +94,10 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
 
       setTimeout(() => { if (mounted) map.relayout() }, 100)
 
+      const handleResize = () => { if (mounted) map.relayout() }
+      window.addEventListener('resize', handleResize)
+      window.visualViewport?.addEventListener('resize', handleResize)
+
       RESULT_PINS.forEach(pin => {
         const position = new window.kakao.maps.LatLng(pin.lat, pin.lng)
         const marker = new window.kakao.maps.Marker({ position, map })
@@ -156,6 +160,8 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
       container.addEventListener('contextmenu', onContextMenu)
 
       return () => {
+        window.removeEventListener('resize', handleResize)
+        window.visualViewport?.removeEventListener('resize', handleResize)
         container.removeEventListener('touchstart', onTouchStart)
         container.removeEventListener('touchmove', onTouchMove)
         container.removeEventListener('touchend', onTouchEnd)

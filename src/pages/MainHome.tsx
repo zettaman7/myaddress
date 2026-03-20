@@ -85,6 +85,11 @@ export default function MainHome({ navigate, setAliasInitCenter, setAliasReturnP
       // dvh 안정화 후 relayout — 초기 레이아웃 공백 방지
       setTimeout(() => { if (mounted) map.relayout() }, 100)
 
+      // 주소창 hide/show 등 뷰포트 변화 시 relayout
+      const handleResize = () => { if (mounted) map.relayout() }
+      window.addEventListener('resize', handleResize)
+      window.visualViewport?.addEventListener('resize', handleResize)
+
       // Add markers
       MAP_PINS.forEach(pin => {
         const position = new window.kakao.maps.LatLng(pin.lat, pin.lng)
@@ -153,6 +158,8 @@ export default function MainHome({ navigate, setAliasInitCenter, setAliasReturnP
       container.addEventListener('contextmenu', onContextMenu)
 
       return () => {
+        window.removeEventListener('resize', handleResize)
+        window.visualViewport?.removeEventListener('resize', handleResize)
         container.removeEventListener('touchstart', onTouchStart)
         container.removeEventListener('touchmove', onTouchMove)
         container.removeEventListener('touchend', onTouchEnd)
