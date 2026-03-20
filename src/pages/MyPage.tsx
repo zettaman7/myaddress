@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Page } from '../App'
 import TabBar from '../components/TabBar'
 import { sharePlace } from '../utils/share'
@@ -78,10 +79,18 @@ const stats = [
 ]
 
 export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPage, setEventAliasName }: Props) {
+  const [deletingId, setDeletingId] = useState<number | null>(null)
+
   const goToEvent = (aliasFullName: string) => {
     setEventReturnPage?.('mypage')
     setEventAliasName?.(aliasFullName)
     navigate('event')
+  }
+
+  const goToEventEdit = (aliasFullName: string) => {
+    setEventReturnPage?.('mypage')
+    setEventAliasName?.(aliasFullName)
+    navigate('event')  // 실제 구현 시 pre-filled edit 페이지로 연결
   }
 
   return (
@@ -146,11 +155,11 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
               : null
             const extraCount = eventCount - 1
 
-            // 버튼 레이블 & 스타일
+            // 버튼 레이블 & 스타일 — 항상 "추가" 역할, 수정/삭제는 행사 현황 섹션에서
             const eventBtn =
-              eventCount === 0 ? { label: '🎉 행사 등록', bg: '#FEF3C7', text: '#D97706' } :
-              eventCount === 1 ? { label: '✏️ 행사 수정', bg: '#F1F5F9', text: '#475569' } :
-                                 { label: '📋 행사 관리', bg: '#F1F5F9', text: '#475569' }
+              eventCount === 0
+                ? { label: '🎉 행사 등록', bg: '#FEF3C7', text: '#D97706' }
+                : { label: '➕ 행사 추가', bg: '#F0FDF4', text: '#059669' }
 
             return (
               <div key={i}
@@ -275,16 +284,35 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
                         <span>📅</span>
                         <span>{ev.startDate} ~ {ev.endDate}</span>
                       </div>
-                      <div className="flex gap-2">
-                        <button className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
-                                style={{ backgroundColor: '#F1F5F9', color: '#475569' }}>
-                          수정
-                        </button>
-                        <button className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
-                                style={{ backgroundColor: '#FEE2E2', color: '#EF4444' }}>
-                          삭제
-                        </button>
-                      </div>
+                      {deletingId === ev.id ? (
+                        // 삭제 확인 인라인
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] font-semibold" style={{ color: '#EF4444' }}>삭제할까요?</span>
+                          <button onClick={() => setDeletingId(null)}
+                                  className="px-2 py-1.5 rounded-lg text-[11px] font-semibold"
+                                  style={{ backgroundColor: '#F1F5F9', color: '#64748B' }}>
+                            취소
+                          </button>
+                          <button onClick={() => setDeletingId(null)}
+                                  className="px-2 py-1.5 rounded-lg text-[11px] font-semibold text-white"
+                                  style={{ backgroundColor: '#EF4444' }}>
+                            확인
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <button onClick={() => goToEventEdit(ev.aliasFullName)}
+                                  className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
+                                  style={{ backgroundColor: '#F1F5F9', color: '#475569' }}>
+                            수정
+                          </button>
+                          <button onClick={() => setDeletingId(ev.id)}
+                                  className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
+                                  style={{ backgroundColor: '#FEE2E2', color: '#EF4444' }}>
+                            삭제
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                   </div>
