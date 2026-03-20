@@ -146,15 +146,18 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
       const onTouchEnd = () => {
         if (longPressTimer.current) clearTimeout(longPressTimer.current)
       }
+      const onContextMenu = (e: Event) => e.preventDefault()
 
       container.addEventListener('touchstart', onTouchStart, { passive: true })
       container.addEventListener('touchmove', onTouchMove, { passive: true })
       container.addEventListener('touchend', onTouchEnd, { passive: true })
+      container.addEventListener('contextmenu', onContextMenu)
 
       return () => {
         container.removeEventListener('touchstart', onTouchStart)
         container.removeEventListener('touchmove', onTouchMove)
         container.removeEventListener('touchend', onTouchEnd)
+        container.removeEventListener('contextmenu', onContextMenu)
         markersRef.current.forEach(m => m.setMap(null))
         overlaysRef.current.forEach(o => o.setMap(null))
         markersRef.current = []
@@ -185,7 +188,9 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
   return (
     <div className="relative w-full h-full overflow-hidden flex flex-col">
       {/* Full-screen map */}
-      <div ref={mapContainerRef} className="absolute inset-0 z-0" />
+      <div ref={mapContainerRef} className="absolute inset-0 z-0"
+           style={{ userSelect: 'none', WebkitUserSelect: 'none', WebkitTouchCallout: 'none' } as React.CSSProperties}
+           onContextMenu={e => e.preventDefault()} />
 
       {/* Map loading/error fallback */}
       {!mapLoaded && !mapError && (

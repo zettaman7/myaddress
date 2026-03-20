@@ -15,6 +15,9 @@ body {
   background-color: #F8FAFC;
   color: #0F172A;
   overscroll-behavior: none; /* 모바일 당겨서 새로고침 방지 */
+  -webkit-touch-callout: none; /* iOS 롱프레스 팝업 방지 */
+  -webkit-user-select: none;   /* Safari 텍스트 선택 방지 */
+  user-select: none;
 }
 
 /* Hide scrollbar while keeping scroll functionality */
