@@ -4,6 +4,8 @@ import { Page } from '../App'
 interface Props {
   navigate: (to: Page) => void
   returnTo: 'detail' | 'mypage'
+  setEventReturnPage?: (p: Page) => void
+  setEventAliasName?: (name: string) => void
 }
 
 const ALL_TAGS = ['#24시간영업', '#주차가능', '#조용한분위기', '#넓음', '#빠른', '#고사양', '#금연', '#학생할인']
@@ -17,7 +19,7 @@ const INITIAL_INFO: InfoRow[] = [
   { label: '웹사이트', value: 'www.pcbang-gn.co.kr', icon: '🌐' },
 ]
 
-export default function AliasEdit({ navigate, returnTo }: Props) {
+export default function AliasEdit({ navigate, returnTo, setEventReturnPage, setEventAliasName }: Props) {
   const [aliasInput, setAliasInput] = useState('넓고 빠른 게임아지트')
   const [activeTags, setActiveTags] = useState<Set<string>>(new Set(INITIAL_ACTIVE))
   const [info, setInfo] = useState<InfoRow[]>(INITIAL_INFO)
@@ -163,7 +165,11 @@ export default function AliasEdit({ navigate, returnTo }: Props) {
           ✓  수정 완료
         </button>
         <button
-          onClick={() => navigate('event')}
+          onClick={() => {
+            setEventReturnPage?.('alias-edit')
+            setEventAliasName?.('@강남구 넓고 빠른 게임아지트  ·  강남 PC프라자')
+            navigate('event')
+          }}
           className="w-full h-[44px] rounded-2xl flex items-center justify-center text-[13px] font-bold gap-1.5"
           style={{ backgroundColor: '#FEF3C7', color: '#D97706' }}
         >

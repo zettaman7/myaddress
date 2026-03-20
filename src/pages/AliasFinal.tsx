@@ -1,8 +1,13 @@
 import { Page } from '../App'
 
-interface Props { navigate: (to: Page) => void; aliasReturnPage?: Page }
+interface Props {
+  navigate: (to: Page) => void
+  aliasReturnPage?: Page
+  setEventReturnPage?: (p: Page) => void
+  setEventAliasName?: (name: string) => void
+}
 
-export default function AliasFinal({ navigate, aliasReturnPage = 'home' }: Props) {
+export default function AliasFinal({ navigate, aliasReturnPage = 'home', setEventReturnPage, setEventAliasName }: Props) {
   return (
     <div className="w-full h-full flex flex-col bg-white">
 
@@ -87,7 +92,11 @@ export default function AliasFinal({ navigate, aliasReturnPage = 'home' }: Props
           <div className="flex-1 h-px" style={{ backgroundColor: '#E2E8F0' }} />
         </div>
 
-        <button onClick={() => navigate('event')}
+        <button onClick={() => {
+                  setEventReturnPage?.('alias-final')
+                  setEventAliasName?.('@강남구 넓고 빠른 게임아지트  ·  강남 PC프라자')
+                  navigate('event')
+                }}
                 className="w-full h-12 rounded-2xl flex items-center justify-center text-[15px] font-bold text-white"
                 style={{ backgroundColor: '#D97706' }}>
           🎉 행사 등록하기 →

@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Page } from '../App'
 
-interface Props { navigate: (to: Page) => void }
+interface Props { navigate: (to: Page) => void; eventAliasName?: string }
 
-export default function EventCondition({ navigate }: Props) {
+export default function EventCondition({ navigate, eventAliasName = '@강남구 넓고 빠른 게임아지트  ·  강남 PC프라자' }: Props) {
   const [discType, setDiscType] = useState('% 할인율')
   const [eligibility, setEligibility] = useState('전체 회원')
 
@@ -35,7 +35,7 @@ export default function EventCondition({ navigate }: Props) {
         {/* Alias ref */}
         <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{ backgroundColor: '#F0FDF4' }}>
           <span className="text-[12px] font-semibold" style={{ color: '#059669' }}>
-            ✓ @강남구 넓고 빠른 게임아지트  ·  강남 PC프라자
+            ✓ {eventAliasName}
           </span>
         </div>
 

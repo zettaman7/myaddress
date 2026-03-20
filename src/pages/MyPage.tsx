@@ -5,6 +5,8 @@ import { sharePlace } from '../utils/share'
 interface Props {
   navigate: (to: Page) => void
   setAliasEditReturn: (v: 'detail' | 'mypage') => void
+  setEventReturnPage?: (p: Page) => void
+  setEventAliasName?: (name: string) => void
 }
 
 const stats = [
@@ -47,7 +49,7 @@ const aliases = [
   },
 ]
 
-export default function MyPage({ navigate, setAliasEditReturn }: Props) {
+export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPage, setEventAliasName }: Props) {
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#F8FAFC' }}>
 
@@ -146,7 +148,11 @@ export default function MyPage({ navigate, setAliasEditReturn }: Props) {
                   ))}
                 </div>
                 <button
-                  onClick={() => navigate('event')}
+                  onClick={() => {
+                    setEventReturnPage?.('mypage')
+                    setEventAliasName?.(a.name)
+                    navigate('event')
+                  }}
                   className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex-shrink-0"
                   style={{ backgroundColor: '#FEF3C7', color: '#D97706' }}
                 >

@@ -1,11 +1,15 @@
 import { useState } from 'react'
 import { Page } from '../App'
 
-interface Props { navigate: (to: Page) => void }
+interface Props {
+  navigate: (to: Page) => void
+  eventReturnPage?: Page
+  eventAliasName?: string
+}
 
 const EVENT_TYPES = ['할인행사', '무료증정', '포인트적립', '기타']
 
-export default function EventRegister({ navigate }: Props) {
+export default function EventRegister({ navigate, eventReturnPage = 'mypage', eventAliasName = '@강남구 넓고 빠른 게임아지트  ·  강남 PC프라자' }: Props) {
   const [selectedType, setSelectedType] = useState('할인행사')
   const [eventName, setEventName] = useState('')
 
@@ -15,7 +19,7 @@ export default function EventRegister({ navigate }: Props) {
       <div className="flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>
         <div className="h-[44px] sm:h-[54px]" />
         <div className="flex items-center gap-3 px-5 pb-3">
-          <button onClick={() => navigate('alias-final')}
+          <button onClick={() => navigate(eventReturnPage)}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0 bg-white"
                   style={{ color: '#1E3A5F' }}>←</button>
           <span className="text-[12px] font-semibold" style={{ color: '#FCD34D' }}>행사 등록  1 / 4 단계</span>
@@ -38,7 +42,7 @@ export default function EventRegister({ navigate }: Props) {
         <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{ backgroundColor: '#F0FDF4' }}>
           <span className="text-[12px] font-bold" style={{ color: '#059669' }}>✓</span>
           <span className="text-[12px] font-semibold" style={{ color: '#059669' }}>
-            @강남구 넓고 빠른 게임아지트  ·  강남 PC프라자
+            {eventAliasName}
           </span>
         </div>
 

@@ -29,6 +29,8 @@ export default function App() {
   const [aliasInitCenter, setAliasInitCenter] = useState<{ lat: number; lng: number } | null>(null)
   const [aliasReturnPage, setAliasReturnPage] = useState<Page>('home')
   const [detailReturnPage, setDetailReturnPage] = useState<Page>('search')
+  const [eventReturnPage, setEventReturnPage] = useState<Page>('mypage')
+  const [eventAliasName, setEventAliasName] = useState('@강남구 넓고 빠른 게임아지트  ·  강남 PC프라자')
   const navigate = (to: Page) => setPage(to)
 
   return (
@@ -36,20 +38,20 @@ export default function App() {
       <div className="relative w-full h-dvh sm:max-w-[414px] sm:max-h-[896px] overflow-hidden bg-white sm:shadow-2xl sm:rounded-[55px]">
         {page === 'home'            && <MainHome navigate={navigate} setAliasInitCenter={setAliasInitCenter} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
         {page === 'search'          && <SearchResults navigate={navigate} setSelectedHasAlias={setSelectedHasAlias} setAliasInitCenter={setAliasInitCenter} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
-        {page === 'detail'          && <PlaceDetail navigate={navigate} hasAlias={selectedHasAlias} setAliasEditReturn={setAliasEditReturn} setPhotoIndex={setPhotoIndex} returnTo={detailReturnPage} setAliasReturnPage={setAliasReturnPage} />}
+        {page === 'detail'          && <PlaceDetail navigate={navigate} hasAlias={selectedHasAlias} setAliasEditReturn={setAliasEditReturn} setPhotoIndex={setPhotoIndex} returnTo={detailReturnPage} setAliasReturnPage={setAliasReturnPage} setEventReturnPage={setEventReturnPage} setEventAliasName={setEventAliasName} />}
         {page === 'photo-view'      && <PhotoViewer navigate={navigate} initialIndex={photoIndex} />}
         {page === 'alias-select'    && <AliasConfirm navigate={navigate} returnTo="home" />}
         {page === 'alias-confirm'   && <AliasConfirm navigate={navigate} initialCenter={aliasInitCenter} returnTo={aliasReturnPage} />}
         {page === 'register'        && <AliasRegister navigate={navigate} aliasReturnPage={aliasReturnPage} />}
         {page === 'alias-detail'    && <AliasDetail navigate={navigate} aliasReturnPage={aliasReturnPage} />}
-        {page === 'alias-final'     && <AliasFinal navigate={navigate} aliasReturnPage={aliasReturnPage} />}
-        {page === 'event'           && <EventRegister navigate={navigate} />}
-        {page === 'event-period'    && <EventPeriod navigate={navigate} />}
-        {page === 'event-condition' && <EventCondition navigate={navigate} />}
-        {page === 'event-final'     && <EventFinal navigate={navigate} />}
+        {page === 'alias-final'     && <AliasFinal navigate={navigate} aliasReturnPage={aliasReturnPage} setEventReturnPage={setEventReturnPage} setEventAliasName={setEventAliasName} />}
+        {page === 'event'           && <EventRegister navigate={navigate} eventReturnPage={eventReturnPage} eventAliasName={eventAliasName} />}
+        {page === 'event-period'    && <EventPeriod navigate={navigate} eventAliasName={eventAliasName} />}
+        {page === 'event-condition' && <EventCondition navigate={navigate} eventAliasName={eventAliasName} />}
+        {page === 'event-final'     && <EventFinal navigate={navigate} eventAliasName={eventAliasName} />}
         {page === 'excel'           && <ExcelImport navigate={navigate} />}
-        {page === 'mypage'          && <MyPage navigate={navigate} setAliasEditReturn={setAliasEditReturn} />}
-        {page === 'alias-edit'      && <AliasEdit navigate={navigate} returnTo={aliasEditReturn} />}
+        {page === 'mypage'          && <MyPage navigate={navigate} setAliasEditReturn={setAliasEditReturn} setEventReturnPage={setEventReturnPage} setEventAliasName={setEventAliasName} />}
+        {page === 'alias-edit'      && <AliasEdit navigate={navigate} returnTo={aliasEditReturn} setEventReturnPage={setEventReturnPage} setEventAliasName={setEventAliasName} />}
       </div>
     </div>
   )

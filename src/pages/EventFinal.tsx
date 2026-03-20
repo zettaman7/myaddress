@@ -1,8 +1,8 @@
 import { Page } from '../App'
 
-interface Props { navigate: (to: Page) => void }
+interface Props { navigate: (to: Page) => void; eventAliasName?: string }
 
-export default function EventFinal({ navigate }: Props) {
+export default function EventFinal({ navigate, eventAliasName = '@강남구 넓고 빠른 게임아지트  ·  강남 PC프라자' }: Props) {
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#F8FAFC' }}>
       {/* Navy header */}
@@ -29,7 +29,7 @@ export default function EventFinal({ navigate }: Props) {
         {/* Alias ref */}
         <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{ backgroundColor: '#F0FDF4' }}>
           <span className="text-[12px] font-semibold" style={{ color: '#059669' }}>
-            ✓ @강남구 넓고 빠른 게임아지트  ·  강남 PC프라자
+            ✓ {eventAliasName}
           </span>
         </div>
 
@@ -38,7 +38,7 @@ export default function EventFinal({ navigate }: Props) {
           <span className="inline-flex self-start px-2 py-1 rounded-lg text-[11px] font-bold text-white"
                 style={{ backgroundColor: '#D97706' }}>할인행사</span>
           <span className="text-[17px] font-extrabold text-white">월드컵 응원 특별 할인 행사</span>
-          <span className="text-[11px]" style={{ color: '#93C5FD' }}>@강남구 넓고 빠른 게임아지트  ·  강남 PC프라자</span>
+          <span className="text-[11px]" style={{ color: '#93C5FD' }}>{eventAliasName}</span>
           <div className="h-px" style={{ backgroundColor: '#2D4F7A' }} />
           {[
             { icon: '📅', label: '기간', value: '2026.03.25 ~ 04.05 (월~금)' },
