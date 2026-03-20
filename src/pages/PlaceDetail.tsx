@@ -145,22 +145,17 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
           ))}
         </div>
 
-        {/* Alias CTA — context-aware */}
-        <div className="px-5 pb-6">
-          {hasAlias ? (
+        {/* 별칭 있을 때만 편집 버튼 — 보조 액션 */}
+        {hasAlias && (
+          <div className="px-5 pb-6">
             <button onClick={() => { setAliasEditReturn('detail'); navigate('alias-edit') }}
-                    className="w-full h-14 rounded-2xl flex items-center justify-center text-[15px] font-bold"
+                    className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-[14px] font-semibold"
                     style={{ backgroundColor: '#F1F5F9', color: '#475569' }}>
-              ✏️ 별칭 편집하기
+              <span>✏️</span>
+              <span>별칭 편집하기</span>
             </button>
-          ) : (
-            <button onClick={() => { setAliasReturnPage?.('detail'); navigate('alias-confirm') }}
-                    className="w-full h-14 rounded-2xl flex items-center justify-center text-[15px] font-bold text-white"
-                    style={{ backgroundColor: '#2563EB' }}>
-              📍 별칭 등록하기
-            </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* ── Bottom action bar ─────────────────────────────────────────────── */}
@@ -168,7 +163,11 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
         {[
           { icon: '🗺', label: '길안내', bg: '#EFF6FF', color: '#2563EB', onClick: () => setShowNavSheet(true) },
           { icon: '📞', label: '전화',   bg: '#F0FDF4', color: '#059669', onClick: () => setShowCallSheet(true) },
-          { icon: '🔖', label: '저장',   bg: '#F8FAFC', color: '#64748B', onClick: () => {} },
+          hasAlias
+            ? { icon: '🎉', label: '행사 등록', bg: '#FEF3C7', color: '#D97706',
+                onClick: () => { setEventReturnPage?.('detail'); setEventAliasName?.('@강동구 가성비 PC방  ·  강동구 가성비 PC방'); navigate('event') } }
+            : { icon: '📍', label: '별칭 등록', bg: '#EFF6FF', color: '#2563EB',
+                onClick: () => { setAliasReturnPage?.('detail'); navigate('alias-confirm') } },
         ].map((btn, i) => (
           <button key={i} onClick={btn.onClick}
                   className="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl py-3 text-[11px] font-semibold"
