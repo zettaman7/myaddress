@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Page } from '../App'
+import StatusBar from '../components/StatusBar'
 
 interface Props { navigate: (to: Page) => void }
 
@@ -9,12 +10,7 @@ export default function ExcelImport({ navigate }: Props) {
 
   return (
     <div className="w-full h-full flex flex-col bg-white">
-      {/* Status bar */}
-      <div className="flex items-center px-5 h-[50px] flex-shrink-0">
-        <span className="text-[15px] font-semibold" style={{ color: '#0F172A' }}>9:41</span>
-        <div className="flex-1" />
-        <span className="text-[12px]" style={{ color: '#64748B' }}>▲ WiFi 🔋</span>
-      </div>
+      <StatusBar variant="dark" />
 
       {/* Nav */}
       <div className="flex items-center gap-3 px-5 pb-3 flex-shrink-0">

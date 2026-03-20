@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Page } from '../App'
 import TabBar from '../components/TabBar'
 import LongPressAliasSheet from '../components/LongPressAliasSheet'
+import StatusBar from '../components/StatusBar'
 
 interface Props {
   navigate: (to: Page) => void
@@ -230,12 +231,7 @@ export default function MainHome({ navigate, setAliasInitCenter, setAliasReturnP
       <div className="absolute inset-x-0 top-0 pointer-events-none z-10"
            style={{ height: 180, background: 'linear-gradient(to bottom, rgba(0,0,0,0.38) 0%, transparent 100%)' }} />
 
-      {/* Status bar */}
-      <div className="absolute inset-x-0 top-0 h-[54px] flex items-center px-5 z-20 pointer-events-none">
-        <span className="text-[15px] font-semibold text-white">9:41</span>
-        <div className="flex-1" />
-        <span className="text-[12px] text-white">▲ WiFi 🔋</span>
-      </div>
+      <StatusBar variant="light" className="absolute inset-x-0 top-0 z-20 pointer-events-none" />
 
       {/* Search bar */}
       <div className="absolute inset-x-5 z-20" style={{ top: 60 }}>

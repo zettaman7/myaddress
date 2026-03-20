@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Page } from '../App'
+import StatusBar from '../components/StatusBar'
 
 interface Props { navigate: (to: Page) => void }
 
@@ -16,11 +17,7 @@ export default function EventPeriod({ navigate }: Props) {
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#F8FAFC' }}>
       {/* Navy header */}
       <div className="flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>
-        <div className="flex items-center px-5 h-[54px]">
-          <span className="text-[15px] font-semibold text-white">9:41</span>
-          <div className="flex-1" />
-          <span className="text-[12px] text-white">▲ WiFi 🔋</span>
-        </div>
+        <StatusBar variant="light" />
         <div className="flex items-center gap-3 px-5 pb-3">
           <button onClick={() => navigate('event')}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0 bg-white"

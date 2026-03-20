@@ -1,6 +1,7 @@
 import { Page } from '../App'
 import TabBar from '../components/TabBar'
 import { sharePlace } from '../utils/share'
+import StatusBar from '../components/StatusBar'
 
 interface Props {
   navigate: (to: Page) => void
@@ -50,12 +51,7 @@ const aliases = [
 export default function MyPage({ navigate, setAliasEditReturn }: Props) {
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#F8FAFC' }}>
-      {/* Status bar */}
-      <div className="flex-shrink-0 h-[62px] flex items-center px-5 bg-white">
-        <span className="text-[15px] font-semibold text-slate-800">9:41</span>
-        <div className="flex-1" />
-        <span className="text-[13px] text-slate-800">▲ WiFi 🔋</span>
-      </div>
+      <StatusBar variant="dark" className="bg-white" />
 
       {/* Header */}
       <div className="flex-shrink-0 flex items-center px-5 bg-white border-b border-slate-100" style={{ height: 56 }}>

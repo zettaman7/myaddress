@@ -1,16 +1,12 @@
 import { Page } from '../App'
+import StatusBar from '../components/StatusBar'
 
 interface Props { navigate: (to: Page) => void; aliasReturnPage?: Page }
 
 export default function AliasFinal({ navigate, aliasReturnPage = 'home' }: Props) {
   return (
     <div className="w-full h-full flex flex-col bg-white">
-      {/* Status bar */}
-      <div className="flex items-center px-5 h-[54px] flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>
-        <span className="text-[15px] font-semibold text-white">9:41</span>
-        <div className="flex-1" />
-        <span className="text-[12px] text-white">▲ WiFi 🔋</span>
-      </div>
+      <StatusBar variant="light" className="bg-[#1E3A5F]" />
 
       {/* Nav */}
       <div className="flex items-center gap-3 px-5 h-[64px] flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>
