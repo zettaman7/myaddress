@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 interface Props {
   address: string
   onClose: () => void
@@ -37,24 +35,12 @@ const apps = [
 ]
 
 export default function NavAppSheet({ address, onClose }: Props) {
-  const [copied, setCopied] = useState(false)
-
   const handleSelect = (deepLink: (addr: string) => string, webUrl: (addr: string) => string) => {
     onClose()
     window.location.href = deepLink(address)
     setTimeout(() => {
       if (document.hasFocus()) window.open(webUrl(address), '_blank')
     }, 1500)
-  }
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(address)
-      setCopied(true)
-      setTimeout(() => { setCopied(false); onClose() }, 1200)
-    } catch {
-      onClose()
-    }
   }
 
   return (
@@ -99,29 +85,8 @@ export default function NavAppSheet({ address, onClose }: Props) {
           </div>
         ))}
 
-        {/* Copy address */}
-        <div className="h-2" style={{ backgroundColor: '#F8FAFC' }} />
-        <button onClick={handleCopy}
-                className="w-full flex items-center gap-4 px-5"
-                style={{ height: 64 }}>
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-               style={{ backgroundColor: copied ? '#D1FAE5' : '#F1F5F9' }}>
-            <span className="text-xl">{copied ? '✅' : '📋'}</span>
-          </div>
-          <span className="flex-1 text-left text-[15px] font-semibold"
-                style={{ color: copied ? '#059669' : '#0F172A' }}>
-            {copied ? '복사됐습니다!' : '주소 복사'}
-          </span>
-          {!copied && (
-            <span className="text-[11px] font-medium px-2 py-1 rounded-lg"
-                  style={{ backgroundColor: '#F1F5F9', color: '#64748B' }}>
-              {address.length > 18 ? address.slice(0, 18) + '…' : address}
-            </span>
-          )}
-        </button>
-
         {/* Cancel */}
-        <div className="mx-5 h-px" style={{ backgroundColor: '#F1F5F9' }} />
+        <div className="h-2" style={{ backgroundColor: '#F8FAFC' }} />
         <button onClick={onClose}
                 className="w-full h-14 flex items-center justify-center text-[16px] font-semibold"
                 style={{ color: '#64748B' }}>
