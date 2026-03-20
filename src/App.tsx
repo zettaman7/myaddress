@@ -33,7 +33,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-500 flex items-center justify-center">
-      <div className="relative w-full max-w-[390px] h-screen max-h-[844px] overflow-hidden bg-white shadow-2xl">
+      <div className="relative w-full max-w-[414px] h-screen max-h-[896px] overflow-hidden bg-white shadow-2xl rounded-[55px]">
         {page === 'home'            && <MainHome navigate={navigate} setAliasInitCenter={setAliasInitCenter} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
         {page === 'search'          && <SearchResults navigate={navigate} setSelectedHasAlias={setSelectedHasAlias} setAliasInitCenter={setAliasInitCenter} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
         {page === 'detail'          && <PlaceDetail navigate={navigate} hasAlias={selectedHasAlias} setAliasEditReturn={setAliasEditReturn} setPhotoIndex={setPhotoIndex} returnTo={detailReturnPage} setAliasReturnPage={setAliasReturnPage} />}
