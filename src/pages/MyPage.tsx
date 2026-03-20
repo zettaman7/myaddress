@@ -133,16 +133,25 @@ export default function MyPage({ navigate, setAliasEditReturn }: Props) {
                   ))}
                 </div>
               </div>
-              <div className="flex gap-1.5 flex-wrap">
-                {a.badges.map((b, j) => (
-                  <span
-                    key={j}
-                    className="px-2 py-0.5 rounded-md text-[10px] font-semibold"
-                    style={{ backgroundColor: b.bg, color: b.text }}
-                  >
-                    {b.label}
-                  </span>
-                ))}
+              <div className="flex items-center justify-between">
+                <div className="flex gap-1.5 flex-wrap">
+                  {a.badges.map((b, j) => (
+                    <span
+                      key={j}
+                      className="px-2 py-0.5 rounded-md text-[10px] font-semibold"
+                      style={{ backgroundColor: b.bg, color: b.text }}
+                    >
+                      {b.label}
+                    </span>
+                  ))}
+                </div>
+                <button
+                  onClick={() => navigate('event')}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex-shrink-0"
+                  style={{ backgroundColor: '#FEF3C7', color: '#D97706' }}
+                >
+                  🎉 행사 등록
+                </button>
               </div>
             </div>
           ))}

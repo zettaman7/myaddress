@@ -154,13 +154,20 @@ export default function AliasEdit({ navigate, returnTo }: Props) {
       </div>
 
       {/* CTA */}
-      <div className="flex-shrink-0 px-5 pb-6 pt-3 bg-white">
+      <div className="flex-shrink-0 px-5 pb-6 pt-3 bg-white flex flex-col gap-2">
         <button
           onClick={() => navigate(returnTo)}
           className="w-full h-[50px] rounded-2xl flex items-center justify-center text-[15px] font-bold text-white gap-2"
           style={{ backgroundColor: '#059669' }}
         >
           ✓  수정 완료
+        </button>
+        <button
+          onClick={() => navigate('event')}
+          className="w-full h-[44px] rounded-2xl flex items-center justify-center text-[13px] font-bold gap-1.5"
+          style={{ backgroundColor: '#FEF3C7', color: '#D97706' }}
+        >
+          🎉 행사 등록하기
         </button>
       </div>
     </div>
