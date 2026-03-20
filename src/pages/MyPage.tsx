@@ -51,6 +51,9 @@ export default function MyPage({ navigate, setAliasEditReturn }: Props) {
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#F8FAFC' }}>
 
+      {/* Status bar spacer */}
+      <div className="h-[44px] sm:h-[54px] flex-shrink-0 bg-white" />
+
       {/* Header */}
       <div className="flex-shrink-0 flex items-center px-5 bg-white border-b border-slate-100" style={{ height: 56 }}>
         <span className="text-lg font-bold text-slate-900">마이페이지</span>

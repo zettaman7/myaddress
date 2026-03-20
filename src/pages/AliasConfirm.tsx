@@ -130,6 +130,7 @@ export default function AliasConfirm({ navigate, initialCenter, returnTo = 'home
 
       {/* ── 헤더 ── */}
       <div className="flex-shrink-0">
+        <div className="h-[44px] sm:h-[54px]" />
         <div className="flex items-center gap-3 px-5 pb-2">
           <button onClick={() => navigate(returnTo)}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0"

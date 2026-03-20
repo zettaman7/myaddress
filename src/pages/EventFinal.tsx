@@ -7,6 +7,7 @@ export default function EventFinal({ navigate }: Props) {
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#F8FAFC' }}>
       {/* Navy header */}
       <div className="flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>
+        <div className="h-[44px] sm:h-[54px]" />
         <div className="flex items-center gap-3 px-5 pb-3">
           <button onClick={() => navigate('event-condition')}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0 bg-white"

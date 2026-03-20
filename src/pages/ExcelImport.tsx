@@ -10,6 +10,9 @@ export default function ExcelImport({ navigate }: Props) {
   return (
     <div className="w-full h-full flex flex-col bg-white">
 
+      {/* Status bar spacer */}
+      <div className="h-[44px] sm:h-[54px] flex-shrink-0 bg-white" />
+
       {/* Nav */}
       <div className="flex items-center gap-3 px-5 pb-3 flex-shrink-0">
         <button onClick={() => navigate('home')}

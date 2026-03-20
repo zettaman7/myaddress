@@ -6,6 +6,9 @@ export default function AliasFinal({ navigate, aliasReturnPage = 'home' }: Props
   return (
     <div className="w-full h-full flex flex-col bg-white">
 
+      {/* Status bar spacer */}
+      <div className="h-[44px] sm:h-[54px] flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }} />
+
       {/* Nav */}
       <div className="flex items-center gap-3 px-5 h-[64px] flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>
         <button onClick={() => navigate('alias-detail')}

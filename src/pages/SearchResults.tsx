@@ -205,6 +205,7 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
 
       {/* Nav header */}
       <div className="relative z-20 flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>
+        <div className="h-[44px] sm:h-[54px]" />
 
         {/* Search bar */}
         <div className="flex items-center gap-2.5 mx-5 px-4 bg-white rounded-full" style={{ height: 46 }}>
@@ -239,12 +240,12 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
 
       {/* Count badge */}
       <div className="absolute z-10 px-3 py-1.5 rounded-full text-[12px] font-bold text-white"
-           style={{ left: '50%', transform: 'translateX(-50%)', top: 415, backgroundColor: '#1E3A5F', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
+           style={{ left: '50%', transform: 'translateX(-50%)', top: 405, backgroundColor: '#1E3A5F', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
         PC방 47곳 발견 · 가격 우선 정렬 ▾
       </div>
 
       {/* Bottom result panel */}
-      <div className="absolute bottom-0 inset-x-0 z-20" style={{ top: 448 }}>
+      <div className="absolute bottom-0 inset-x-0 z-20" style={{ top: 438 }}>
         <div className="w-full h-full bg-white flex flex-col" style={{ borderRadius: '16px 16px 0 0', boxShadow: '0 -4px 20px rgba(0,0,0,0.1)' }}>
           {/* Handle */}
           <div className="flex justify-center pt-2 pb-1 flex-shrink-0">

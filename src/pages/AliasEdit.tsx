@@ -34,6 +34,9 @@ export default function AliasEdit({ navigate, returnTo }: Props) {
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#F8FAFC' }}>
 
+      {/* Status bar spacer */}
+      <div className="h-[44px] sm:h-[54px] flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }} />
+
       {/* Nav bar (navy) */}
       <div className="flex items-center gap-3 px-5 h-[64px] flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>
         <button
