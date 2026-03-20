@@ -1,0 +1,21 @@
+{
+  "name": "마이주소 플랫폼",
+  "short_name": "마이주소",
+  "description": "나만의 별칭 주소를 등록하고 공유하는 서비스",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#2563EB",
+  "orientation": "portrait-primary",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["navigation", "lifestyle"]
+}
