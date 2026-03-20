@@ -38,7 +38,7 @@ export default function App() {
         {page === 'search'          && <SearchResults navigate={navigate} setSelectedHasAlias={setSelectedHasAlias} setAliasInitOffset={setAliasInitOffset} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
         {page === 'detail'          && <PlaceDetail navigate={navigate} hasAlias={selectedHasAlias} setAliasEditReturn={setAliasEditReturn} setPhotoIndex={setPhotoIndex} returnTo={detailReturnPage} setAliasReturnPage={setAliasReturnPage} />}
         {page === 'photo-view'      && <PhotoViewer navigate={navigate} initialIndex={photoIndex} />}
-        {page === 'alias-select'    && <AliasConfirm navigate={navigate} startInSelect returnTo="home" />}
+        {page === 'alias-select'    && <AliasConfirm navigate={navigate} returnTo="home" />}
         {page === 'alias-confirm'   && <AliasConfirm navigate={navigate} initialOffset={aliasInitOffset} returnTo={aliasReturnPage} />}
         {page === 'register'        && <AliasRegister navigate={navigate} aliasReturnPage={aliasReturnPage} />}
         {page === 'alias-detail'    && <AliasDetail navigate={navigate} aliasReturnPage={aliasReturnPage} />}
