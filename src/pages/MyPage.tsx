@@ -85,9 +85,9 @@ const endedEvents = aliases.flatMap(a =>
 const totalActiveEvents = allEvents.length
 
 const stats = [
-  { value: '3',                       label: '영구 별칭',   sub: '무료 3개 사용중',  valueColor: '#2563EB', subColor: '#94A3B8' },
-  { value: '1',                       label: '임시 별칭',   sub: 'D-2 만료 예정',  valueColor: '#D97706', subColor: '#D97706' },
-  { value: String(totalActiveEvents), label: '진행중 행사', sub: `D-${allEvents[0]?.dday ?? '-'} 최근 종료`, valueColor: '#D97706', subColor: '#D97706' },
+  { value: '3',                       label: '별창',      sub: '무료 3개 사용중',                       valueColor: '#2563EB', subColor: '#94A3B8' },
+  { value: String(totalActiveEvents), label: '행사',      sub: `${totalActiveEvents}건 이벤트중`,       valueColor: '#D97706', subColor: '#D97706' },
+  { value: '247',                     label: '공유 횟수', sub: '지난 1달 누적',                         valueColor: '#0F172A', subColor: '#94A3B8' },
 ]
 
 export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPage, setEventAliasName }: Props) {

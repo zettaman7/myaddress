@@ -169,7 +169,6 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
           { icon: '🗺', label: '길안내', bg: '#EFF6FF', color: '#2563EB', onClick: () => setShowNavSheet(true) },
           { icon: '📞', label: '전화',   bg: '#F0FDF4', color: '#059669', onClick: () => setShowCallSheet(true) },
           { icon: '🔖', label: '저장',   bg: '#F8FAFC', color: '#64748B', onClick: () => {} },
-          ...(hasAlias ? [{ icon: '🎉', label: '행사 등록', bg: '#FEF3C7', color: '#D97706', onClick: () => { setEventReturnPage?.('detail'); setEventAliasName?.('@강동구 가성비 PC방  ·  하이프PC방'); navigate('event') } }] : []),
         ].map((btn, i) => (
           <button key={i} onClick={btn.onClick}
                   className="flex-1 flex flex-col items-center justify-center gap-1 rounded-xl py-3 text-[11px] font-semibold"
