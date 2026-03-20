@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 interface Props {
   address: string
   onClose: () => void
@@ -8,36 +10,51 @@ const apps = [
     id: 'naver',
     name: '네이버지도',
     icon: '/images/ZMzbX.jpeg',
-    getUrl: (addr: string) =>
-      `https://map.naver.com/v5/search/${encodeURIComponent(addr)}`,
+    deepLink: (addr: string) => `nmap://search?query=${encodeURIComponent(addr)}&appname=com.myaddress.app`,
+    webUrl:   (addr: string) => `https://map.naver.com/v5/search/${encodeURIComponent(addr)}`,
   },
   {
     id: 'kakao',
     name: '카카오지도',
     icon: '/images/WYVaE.jpeg',
-    getUrl: (addr: string) =>
-      `https://map.kakao.com/link/search/${encodeURIComponent(addr)}`,
+    deepLink: (addr: string) => `kakaomap://search?q=${encodeURIComponent(addr)}`,
+    webUrl:   (addr: string) => `https://map.kakao.com/link/search/${encodeURIComponent(addr)}`,
   },
   {
     id: 'tmap',
     name: 'T맵',
     icon: '/images/V7a4v.jpeg',
-    getUrl: (addr: string) =>
-      `tmap://search?name=${encodeURIComponent(addr)}`,
+    deepLink: (addr: string) => `tmap://search?name=${encodeURIComponent(addr)}`,
+    webUrl:   (addr: string) => `https://tmap.life/${encodeURIComponent(addr)}`,
   },
   {
     id: 'google',
     name: 'Google 지도',
     icon: '/images/ZpMDo.jpeg',
-    getUrl: (addr: string) =>
-      `https://maps.google.com/?q=${encodeURIComponent(addr)}`,
+    deepLink: (addr: string) => `comgooglemaps://?q=${encodeURIComponent(addr)}`,
+    webUrl:   (addr: string) => `https://maps.google.com/?q=${encodeURIComponent(addr)}`,
   },
 ]
 
 export default function NavAppSheet({ address, onClose }: Props) {
-  const handleSelect = (getUrl: (addr: string) => string) => {
-    window.open(getUrl(address), '_blank')
+  const [copied, setCopied] = useState(false)
+
+  const handleSelect = (deepLink: (addr: string) => string, webUrl: (addr: string) => string) => {
     onClose()
+    window.location.href = deepLink(address)
+    setTimeout(() => {
+      if (document.hasFocus()) window.open(webUrl(address), '_blank')
+    }, 1500)
+  }
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(address)
+      setCopied(true)
+      setTimeout(() => { setCopied(false); onClose() }, 1200)
+    } catch {
+      onClose()
+    }
   }
 
   return (
@@ -67,7 +84,7 @@ export default function NavAppSheet({ address, onClose }: Props) {
         {apps.map((app, i) => (
           <div key={app.id}>
             <button
-              onClick={() => handleSelect(app.getUrl)}
+              onClick={() => handleSelect(app.deepLink, app.webUrl)}
               className="w-full flex items-center gap-4 px-5 py-3"
               style={{ height: 64 }}>
               <img src={app.icon} alt={app.name}
@@ -82,8 +99,29 @@ export default function NavAppSheet({ address, onClose }: Props) {
           </div>
         ))}
 
-        {/* Cancel */}
+        {/* Copy address */}
         <div className="h-2" style={{ backgroundColor: '#F8FAFC' }} />
+        <button onClick={handleCopy}
+                className="w-full flex items-center gap-4 px-5"
+                style={{ height: 64 }}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+               style={{ backgroundColor: copied ? '#D1FAE5' : '#F1F5F9' }}>
+            <span className="text-xl">{copied ? '✅' : '📋'}</span>
+          </div>
+          <span className="flex-1 text-left text-[15px] font-semibold"
+                style={{ color: copied ? '#059669' : '#0F172A' }}>
+            {copied ? '복사됐습니다!' : '주소 복사'}
+          </span>
+          {!copied && (
+            <span className="text-[11px] font-medium px-2 py-1 rounded-lg"
+                  style={{ backgroundColor: '#F1F5F9', color: '#64748B' }}>
+              {address.length > 18 ? address.slice(0, 18) + '…' : address}
+            </span>
+          )}
+        </button>
+
+        {/* Cancel */}
+        <div className="mx-5 h-px" style={{ backgroundColor: '#F1F5F9' }} />
         <button onClick={onClose}
                 className="w-full h-14 flex items-center justify-center text-[16px] font-semibold"
                 style={{ color: '#64748B' }}>
