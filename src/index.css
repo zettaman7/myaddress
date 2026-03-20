@@ -20,6 +20,11 @@ body {
   user-select: none;
 }
 
+/* 실제 뷰포트 높이 (JS 주입값, 폴백은 100dvh) */
+:root { --app-h: 100dvh; }
+
+.h-app { height: var(--app-h); }
+
 /* Hide scrollbar while keeping scroll functionality */
 .scrollbar-hide {
   -ms-overflow-style: none;
