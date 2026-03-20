@@ -47,8 +47,11 @@ export default function PhotoViewer({ navigate, initialIndex = 0 }: Props) {
 
   return (
     <div className="w-full h-full flex flex-col bg-black">
-      {/* Status bar */}
-      <div className="flex-shrink-0 flex items-center px-5 h-[54px] z-10">
+      {/* Status bar spacer */}
+      <div className="h-[44px] sm:h-[54px] flex-shrink-0" />
+
+      {/* Nav bar */}
+      <div className="flex-shrink-0 flex items-center px-5 h-[44px] z-10">
         <button onClick={() => navigate('detail')}
                 className="w-9 h-9 rounded-full flex items-center justify-center text-white"
                 style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}>←</button>
