@@ -5,7 +5,6 @@ import MiniCard from '../components/MiniCard'
 import SwipeReveal from '../components/SwipeReveal'
 import { sharePlace } from '../utils/share'
 import LongPressAliasSheet from '../components/LongPressAliasSheet'
-import StatusBar from '../components/StatusBar'
 
 interface Props {
   navigate: (to: Page) => void
@@ -206,7 +205,6 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
 
       {/* Nav header */}
       <div className="relative z-20 flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>
-        <StatusBar variant="light" />
 
         {/* Search bar */}
         <div className="flex items-center gap-2.5 mx-5 px-4 bg-white rounded-full" style={{ height: 46 }}>

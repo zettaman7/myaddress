@@ -3,7 +3,6 @@ import { Page } from '../App'
 import { sharePlace } from '../utils/share'
 import NavAppSheet from '../components/NavAppSheet'
 import PhoneCallSheet from '../components/PhoneCallSheet'
-import StatusBar from '../components/StatusBar'
 
 const PLACE = { alias: '강동구 가성비 PC방', name: '강동구 가성비 PC방', address: '서울 강동구 천호대로 1071' }
 
@@ -46,7 +45,6 @@ export default function PlaceDetail({ navigate, hasAlias = false, setAliasEditRe
         {/* Dark overlay */}
         <div className="absolute inset-0" style={{ backgroundColor: 'rgba(0,0,0,0.4)' }} />
 
-        <StatusBar variant="light" className="absolute inset-x-0 top-0 z-10" />
 
         {/* Back button */}
         <button onClick={() => navigate(returnTo)}

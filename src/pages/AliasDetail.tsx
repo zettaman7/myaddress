@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react'
 import { Page } from '../App'
-import StatusBar from '../components/StatusBar'
 
 interface Props { navigate: (to: Page) => void; aliasReturnPage?: Page }
 
@@ -76,7 +75,6 @@ export default function AliasDetail({ navigate, aliasReturnPage = 'home' }: Prop
 
   return (
     <div className="w-full h-full flex flex-col bg-white">
-      <StatusBar variant="light" className="bg-[#1E3A5F]" />
 
       {/* Nav */}
       <div className="flex items-center gap-3 px-5 h-[64px] flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Page } from '../App'
-import StatusBar from '../components/StatusBar'
 
 interface Props { navigate: (to: Page) => void }
 
@@ -10,7 +9,6 @@ export default function ExcelImport({ navigate }: Props) {
 
   return (
     <div className="w-full h-full flex flex-col bg-white">
-      <StatusBar variant="dark" />
 
       {/* Nav */}
       <div className="flex items-center gap-3 px-5 pb-3 flex-shrink-0">

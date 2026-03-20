@@ -10,7 +10,8 @@
       "Bash(git init:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(powershell -Command \"Set-Location ''d:\\\\newproject''; git init; git add .; git commit -m ''feat: V1.0 - initial implementation''; git tag v1.0\")"
+      "Bash(powershell -Command \"Set-Location ''d:\\\\newproject''; git init; git add .; git commit -m ''feat: V1.0 - initial implementation''; git tag v1.0\")",
+      "Bash(powershell -Command \"cd d:\\\\newproject; git status; git log --oneline -3\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\zetta\\.claude\\projects\\d--newproject"

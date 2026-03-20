@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Page } from '../App'
-import StatusBar from '../components/StatusBar'
 
 interface Props {
   navigate: (to: Page) => void
@@ -34,7 +33,6 @@ export default function AliasEdit({ navigate, returnTo }: Props) {
 
   return (
     <div className="w-full h-full flex flex-col" style={{ backgroundColor: '#F8FAFC' }}>
-      <StatusBar variant="light" className="bg-[#1E3A5F]" />
 
       {/* Nav bar (navy) */}
       <div className="flex items-center gap-3 px-5 h-[64px] flex-shrink-0" style={{ backgroundColor: '#1E3A5F' }}>

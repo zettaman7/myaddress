@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
 import { Page } from '../App'
-import StatusBar from '../components/StatusBar'
 
 interface Props {
   navigate: (to: Page) => void
@@ -131,7 +130,6 @@ export default function AliasConfirm({ navigate, initialCenter, returnTo = 'home
 
       {/* ── 헤더 ── */}
       <div className="flex-shrink-0">
-        <StatusBar variant="dark" />
         <div className="flex items-center gap-3 px-5 pb-2">
           <button onClick={() => navigate(returnTo)}
                   className="w-9 h-9 rounded-xl flex items-center justify-center text-lg flex-shrink-0"
