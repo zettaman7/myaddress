@@ -17,6 +17,7 @@ interface AliasEvent {
   startDate: string
   endDate: string
   dday: number
+  status?: 'active' | 'ended'
 }
 
 const EVENT_TYPE_STYLE: Record<string, { bg: string; text: string }> = {
@@ -43,8 +44,10 @@ const aliases = [
     cardBg: '#FFFFFF',
     cardBorder: '#F1F5F9',
     events: [
-      { id: 1, type: '무료증정' as const,   name: '무료 음료 1잔 증정',          startDate: '03.20', endDate: '03.31', dday: 6  },
-      { id: 2, type: '할인행사' as const,   name: '월드컵 응원 특별 할인 행사',   startDate: '03.25', endDate: '04.05', dday: 11 },
+      { id: 1, type: '무료증정' as const, name: '무료 음료 1잔 증정',        startDate: '03.20', endDate: '03.31', dday: 6,  status: 'active' as const },
+      { id: 2, type: '할인행사' as const, name: '월드컵 응원 특별 할인 행사', startDate: '03.25', endDate: '04.05', dday: 11, status: 'active' as const },
+      { id: 3, type: '할인행사' as const, name: '설날 특별 이벤트',          startDate: '01.29', endDate: '02.05', dday: 0,  status: 'ended'  as const },
+      { id: 4, type: '무료증정' as const, name: '신년 음료 무료 증정',        startDate: '01.01', endDate: '01.15', dday: 0,  status: 'ended'  as const },
     ] as AliasEvent[],
   },
   {
@@ -65,10 +68,19 @@ const aliases = [
   },
 ]
 
-// 전체 진행중 행사 플랫 리스트 (별칭 정보 포함)
+// 진행중 행사 플랫 리스트 (별칭 정보 포함)
 const allEvents = aliases.flatMap(a =>
-  a.events.map(ev => ({ ...ev, aliasName: a.alias, placeName: a.placeName, aliasFullName: a.name }))
+  a.events
+    .filter(ev => ev.status !== 'ended')
+    .map(ev => ({ ...ev, aliasName: a.alias, placeName: a.placeName, aliasFullName: a.name }))
 ).sort((a, b) => a.dday - b.dday)
+
+// 종료된 행사 플랫 리스트
+const endedEvents = aliases.flatMap(a =>
+  a.events
+    .filter(ev => ev.status === 'ended')
+    .map(ev => ({ ...ev, aliasName: a.alias, placeName: a.placeName, aliasFullName: a.name }))
+)
 
 const totalActiveEvents = allEvents.length
 
@@ -80,6 +92,8 @@ const stats = [
 
 export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPage, setEventAliasName }: Props) {
   const [deletingId, setDeletingId] = useState<number | null>(null)
+  const [endedDeletingId, setEndedDeletingId] = useState<number | null>(null)
+  const [showEndedEvents, setShowEndedEvents] = useState(false)
 
   const goToEvent = (aliasFullName: string) => {
     setEventReturnPage?.('mypage')
@@ -148,10 +162,11 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
           </div>
 
           {aliases.map((a, i) => {
-            const eventCount = a.events.length
+            const activeEvents = a.events.filter(ev => ev.status !== 'ended')
+            const eventCount = activeEvents.length
             // 가장 임박한 행사 (dday 오름차순 첫 번째)
             const primaryEvent = eventCount > 0
-              ? [...a.events].sort((x, y) => x.dday - y.dday)[0]
+              ? [...activeEvents].sort((x, y) => x.dday - y.dday)[0]
               : null
             const extraCount = eventCount - 1
 
@@ -240,15 +255,17 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
         </div>
 
         {/* ── 행사 현황 ── */}
-        {allEvents.length > 0 && (
+        {(allEvents.length > 0 || endedEvents.length > 0) && (
           <div className="flex flex-col gap-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-[15px] font-bold text-slate-900">행사 현황</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
-                      style={{ backgroundColor: '#D97706' }}>
-                  {allEvents.length}개 진행중
-                </span>
+                {allEvents.length > 0 && (
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold text-white"
+                        style={{ backgroundColor: '#D97706' }}>
+                    {allEvents.length}개 진행중
+                  </span>
+                )}
               </div>
             </div>
 
@@ -319,6 +336,100 @@ export default function MyPage({ navigate, setAliasEditReturn, setEventReturnPag
                 )
               })}
             </div>
+
+            {/* 종료된 행사 — 접힘/펼침 */}
+            {endedEvents.length > 0 && (
+              <div className="flex flex-col gap-2">
+                {/* 토글 헤더 */}
+                <button
+                  onClick={() => setShowEndedEvents(v => !v)}
+                  className="flex items-center gap-2 px-3.5 py-2.5 rounded-[14px]"
+                  style={{ backgroundColor: '#F1F5F9' }}
+                >
+                  <span className="text-[12px] font-semibold" style={{ color: '#64748B' }}>
+                    🗂 종료된 행사 {endedEvents.length}건
+                  </span>
+                  <span className="text-[10px]" style={{ color: '#94A3B8' }}>· 1년 보관</span>
+                  <span className="ml-auto text-[12px]" style={{ color: '#94A3B8' }}>
+                    {showEndedEvents ? '▴' : '▾'}
+                  </span>
+                </button>
+
+                {showEndedEvents && (
+                  <div className="flex flex-col gap-2">
+                    {endedEvents.map((ev, i) => {
+                      const typeStyle = EVENT_TYPE_STYLE[ev.type]
+                      return (
+                        <div key={i}
+                             className="flex flex-col gap-2.5 p-3.5 rounded-[16px]"
+                             style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', opacity: 0.85 }}>
+
+                          {/* 행사 유형 + 이름 */}
+                          <div className="flex items-start gap-2">
+                            <span className="flex-shrink-0 mt-0.5 px-2 py-0.5 rounded text-[10px] font-bold"
+                                  style={{ backgroundColor: typeStyle.bg, color: typeStyle.text, opacity: 0.6 }}>
+                              {ev.type}
+                            </span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[13px] font-semibold leading-tight" style={{ color: '#64748B' }}>{ev.name}</p>
+                              <p className="text-[11px] mt-0.5 truncate" style={{ color: '#94A3B8' }}>
+                                @{ev.aliasName}  ·  {ev.placeName}
+                              </p>
+                            </div>
+                            <span className="flex-shrink-0 px-2 py-1 rounded-lg text-[10px] font-bold"
+                                  style={{ backgroundColor: '#E2E8F0', color: '#94A3B8' }}>
+                              종료
+                            </span>
+                          </div>
+
+                          {/* 기간 + 버튼 */}
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1.5 text-[11px]" style={{ color: '#94A3B8' }}>
+                              <span>📅</span>
+                              <span>{ev.startDate} ~ {ev.endDate}</span>
+                            </div>
+                            {endedDeletingId === ev.id ? (
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] font-semibold" style={{ color: '#EF4444' }}>삭제할까요?</span>
+                                <button onClick={() => setEndedDeletingId(null)}
+                                        className="px-2 py-1.5 rounded-lg text-[11px] font-semibold"
+                                        style={{ backgroundColor: '#F1F5F9', color: '#64748B' }}>
+                                  취소
+                                </button>
+                                <button onClick={() => setEndedDeletingId(null)}
+                                        className="px-2 py-1.5 rounded-lg text-[11px] font-semibold text-white"
+                                        style={{ backgroundColor: '#EF4444' }}>
+                                  확인
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex gap-2">
+                                <button onClick={() => goToEvent(ev.aliasFullName)}
+                                        className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
+                                        style={{ backgroundColor: '#EFF6FF', color: '#2563EB' }}>
+                                  다시 등록
+                                </button>
+                                <button onClick={() => setEndedDeletingId(ev.id)}
+                                        className="px-2.5 py-1.5 rounded-lg text-[11px] font-semibold"
+                                        style={{ backgroundColor: '#FEE2E2', color: '#EF4444' }}>
+                                  삭제
+                                </button>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* 1년 보관 안내 */}
+                          <span className="text-[10px]" style={{ color: '#CBD5E1' }}>
+                            자동 삭제 예정: 종료 후 1년
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
           </div>
         )}
 
