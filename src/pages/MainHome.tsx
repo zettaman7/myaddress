@@ -82,6 +82,9 @@ export default function MainHome({ navigate, setAliasInitCenter, setAliasReturnP
       kakaoMapRef.current = map
       if (mounted) setMapLoaded(true)
 
+      // dvh 안정화 후 relayout — 초기 레이아웃 공백 방지
+      setTimeout(() => { if (mounted) map.relayout() }, 100)
+
       // Add markers
       MAP_PINS.forEach(pin => {
         const position = new window.kakao.maps.LatLng(pin.lat, pin.lng)

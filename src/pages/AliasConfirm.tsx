@@ -49,6 +49,8 @@ export default function AliasConfirm({ navigate, initialCenter, returnTo = 'home
       kakaoMapRef.current = map
       if (mounted) setMapLoaded(true)
 
+      setTimeout(() => { if (mounted) map.relayout() }, 100)
+
       // GPS marker at center
       markerRef.current = new window.kakao.maps.Marker({
         position: new window.kakao.maps.LatLng(center.lat, center.lng),

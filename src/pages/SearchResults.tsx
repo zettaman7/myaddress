@@ -92,6 +92,8 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
       kakaoMapRef.current = map
       if (mounted) setMapLoaded(true)
 
+      setTimeout(() => { if (mounted) map.relayout() }, 100)
+
       RESULT_PINS.forEach(pin => {
         const position = new window.kakao.maps.LatLng(pin.lat, pin.lng)
         const marker = new window.kakao.maps.Marker({ position, map })
