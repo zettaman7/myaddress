@@ -82,13 +82,15 @@ export default function MainHome({ navigate, setAliasInitCenter, setAliasReturnP
       kakaoMapRef.current = map
       if (mounted) setMapLoaded(true)
 
-      // dvh 안정화 후 relayout — 초기 레이아웃 공백 방지
-      setTimeout(() => { if (mounted) map.relayout() }, 100)
-
-      // 주소창 hide/show 등 뷰포트 변화 시 relayout
+      // 초기 + 컨테이너 크기 변화 시 relayout (iOS Safari 주소창 hide/show 포함)
+      const doRelayout = () => { if (mounted) map.relayout() }
+      setTimeout(doRelayout, 50)
+      setTimeout(doRelayout, 300)
       const handleResize = () => { if (mounted) map.relayout() }
       window.addEventListener('resize', handleResize)
       window.visualViewport?.addEventListener('resize', handleResize)
+      const ro = new ResizeObserver(doRelayout)
+      ro.observe(container)
 
       // Add markers
       MAP_PINS.forEach(pin => {
@@ -158,6 +160,7 @@ export default function MainHome({ navigate, setAliasInitCenter, setAliasReturnP
       container.addEventListener('contextmenu', onContextMenu)
 
       return () => {
+        ro.disconnect()
         window.removeEventListener('resize', handleResize)
         window.visualViewport?.removeEventListener('resize', handleResize)
         container.removeEventListener('touchstart', onTouchStart)

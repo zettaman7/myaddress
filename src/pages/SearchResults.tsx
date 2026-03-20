@@ -92,11 +92,14 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
       kakaoMapRef.current = map
       if (mounted) setMapLoaded(true)
 
-      setTimeout(() => { if (mounted) map.relayout() }, 100)
-
+      const doRelayout = () => { if (mounted) map.relayout() }
+      setTimeout(doRelayout, 50)
+      setTimeout(doRelayout, 300)
       const handleResize = () => { if (mounted) map.relayout() }
       window.addEventListener('resize', handleResize)
       window.visualViewport?.addEventListener('resize', handleResize)
+      const ro = new ResizeObserver(doRelayout)
+      ro.observe(container)
 
       RESULT_PINS.forEach(pin => {
         const position = new window.kakao.maps.LatLng(pin.lat, pin.lng)
@@ -160,6 +163,7 @@ export default function SearchResults({ navigate, setSelectedHasAlias, setAliasI
       container.addEventListener('contextmenu', onContextMenu)
 
       return () => {
+        ro.disconnect()
         window.removeEventListener('resize', handleResize)
         window.visualViewport?.removeEventListener('resize', handleResize)
         container.removeEventListener('touchstart', onTouchStart)

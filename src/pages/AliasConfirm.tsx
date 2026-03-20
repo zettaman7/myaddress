@@ -49,11 +49,14 @@ export default function AliasConfirm({ navigate, initialCenter, returnTo = 'home
       kakaoMapRef.current = map
       if (mounted) setMapLoaded(true)
 
-      setTimeout(() => { if (mounted) map.relayout() }, 100)
-
+      const doRelayout = () => { if (mounted) map.relayout() }
+      setTimeout(doRelayout, 50)
+      setTimeout(doRelayout, 300)
       const handleResize = () => { if (mounted) map.relayout() }
       window.addEventListener('resize', handleResize)
       window.visualViewport?.addEventListener('resize', handleResize)
+      const ro = new ResizeObserver(doRelayout)
+      ro.observe(container)
 
       // GPS marker at center
       markerRef.current = new window.kakao.maps.Marker({
@@ -81,6 +84,7 @@ export default function AliasConfirm({ navigate, initialCenter, returnTo = 'home
       })
 
       return () => {
+        ro.disconnect()
         window.removeEventListener('resize', handleResize)
         window.visualViewport?.removeEventListener('resize', handleResize)
         if (markerRef.current) markerRef.current.setMap(null)
