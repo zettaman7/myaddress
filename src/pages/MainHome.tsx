@@ -278,7 +278,7 @@ export default function MainHome({ navigate, setAliasInitCenter, setAliasReturnP
       )}
 
       {/* Current location button */}
-      <div className="absolute z-20" style={{ left: 20, bottom: selectedPin ? 304 : 116, transition: 'bottom 0.3s ease' }}>
+      <div className="absolute z-20" style={{ left: 20, bottom: `calc(${selectedPin ? 304 : 116}px + env(safe-area-inset-bottom, 0px))`, transition: 'bottom 0.3s ease' }}>
         <button
           onClick={() => kakaoMapRef.current?.setCenter(new window.kakao.maps.LatLng(37.5382, 127.1243))}
           className="flex items-center gap-1.5 px-3 py-2 bg-white rounded-full text-sm font-semibold text-slate-700"
@@ -289,7 +289,7 @@ export default function MainHome({ navigate, setAliasInitCenter, setAliasReturnP
 
       {/* Register FAB */}
       {!selectedPin && (
-        <div className="absolute z-20" style={{ right: 20, bottom: 116 }}>
+        <div className="absolute z-20" style={{ right: 20, bottom: 'calc(116px + env(safe-area-inset-bottom, 0px))' }}>
           <button onClick={() => { setAliasReturnPage('home'); navigate('alias-confirm') }}
                   className="flex items-center gap-2 px-4 py-3 rounded-full text-[13px] font-bold text-white"
                   style={{ backgroundColor: '#2563EB', boxShadow: '0 4px 16px rgba(37,99,235,0.45)' }}>
@@ -301,7 +301,7 @@ export default function MainHome({ navigate, setAliasInitCenter, setAliasReturnP
       {/* Pin mini card */}
       {selectedPin && (
         <div className="absolute inset-x-4 z-30 rounded-2xl p-4 flex flex-col gap-2.5"
-             style={{ bottom: 104, backgroundColor: '#FFFFFF', boxShadow: '0 -4px 32px rgba(0,0,0,0.22)' }}
+             style={{ bottom: 'calc(104px + env(safe-area-inset-bottom, 0px))', backgroundColor: '#FFFFFF', boxShadow: '0 -4px 32px rgba(0,0,0,0.22)' }}
              onClick={e => e.stopPropagation()}>
           <div className="flex items-start gap-2.5">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"

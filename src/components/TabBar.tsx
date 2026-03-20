@@ -14,7 +14,7 @@ const tabs = [
 export default function TabBar({ activePage, navigate }: Props) {
   return (
     <div className="flex-shrink-0 flex items-start justify-center bg-white border-t border-slate-100"
-         style={{ height: 96, paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 16 }}>
+         style={{ height: 'calc(96px + env(safe-area-inset-bottom, 0px))', paddingLeft: 12, paddingRight: 12, paddingTop: 8, paddingBottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}>
       <div className="w-full flex"
            style={{ height: 62, borderRadius: 32, backgroundColor: '#F1F5F9', padding: 4 }}>
         {tabs.map(tab => {

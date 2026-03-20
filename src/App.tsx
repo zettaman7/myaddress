@@ -35,7 +35,7 @@ export default function App() {
 
   return (
     <div className="min-h-dvh bg-white sm:bg-slate-500 sm:flex sm:items-center sm:justify-center">
-      <div className="relative w-full h-dvh sm:max-w-[414px] sm:max-h-[896px] overflow-hidden bg-white sm:shadow-2xl sm:rounded-[55px]">
+      <div className="relative w-full h-[100lvh] sm:max-w-[414px] sm:max-h-[896px] overflow-hidden bg-white sm:shadow-2xl sm:rounded-[55px]">
         {page === 'home'            && <MainHome navigate={navigate} setAliasInitCenter={setAliasInitCenter} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
         {page === 'search'          && <SearchResults navigate={navigate} setSelectedHasAlias={setSelectedHasAlias} setAliasInitCenter={setAliasInitCenter} setAliasReturnPage={setAliasReturnPage} setDetailReturnPage={setDetailReturnPage} />}
         {page === 'detail'          && <PlaceDetail navigate={navigate} hasAlias={selectedHasAlias} setAliasEditReturn={setAliasEditReturn} setPhotoIndex={setPhotoIndex} returnTo={detailReturnPage} setAliasReturnPage={setAliasReturnPage} setEventReturnPage={setEventReturnPage} setEventAliasName={setEventAliasName} />}
